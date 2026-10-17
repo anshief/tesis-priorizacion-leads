@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scoring-leads"
+version = "1.0.0"
+description = "Asigna cluster y percentil a los leads del CRM dentro de Power BI"
+requires-python = ">=3.9"
+dependencies = [
+    "pandas>=2.0,<4.0",
+    "numpy>=1.24",
+    "scikit-learn==1.9.0",
+    "joblib>=1.3",
+    "scipy>=1.11",
+]
+
+[tool.setuptools]
+packages = ["scoring_leads"]
+
+[tool.setuptools.package-data]
+scoring_leads = ["modelos/*.joblib", "modelos/*.pkl", "modelos/*.json"]

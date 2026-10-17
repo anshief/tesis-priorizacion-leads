@@ -1,0 +1,752 @@
+% ================================================================================
+% MARCO TEÓRICO
+%
+% Estructura basada en el Capítulo 6 del protocolo aprobado, ampliada con las
+% secciones correspondientes a los métodos que se incorporaron durante el
+% desarrollo y que el protocolo no contemplaba: curva precisión-recall, K-Means,
+% fuga de información, validación out-of-fold y pruebas estadísticas.
+% ================================================================================
+
+\section{Analítica de datos aplicada en procesos comerciales}
+
+La analítica aplicada a procesos comerciales y de mercadeo permite a las
+organizaciones explotar los datos históricos de sus clientes con el fin de
+entender patrones de comportamiento y anticipar resultados. Los equipos
+comerciales que utilizan modelos analíticos para examinar interacciones y datos
+transaccionales pueden identificar oportunidades de manera más precisa y reducir
+el tiempo invertido en clientes con bajo potencial
+\cite{smith2020howdata, bykowsky2025leaders}. Estas iniciativas extraen variables
+de sistemas de CRM, redes sociales y campañas digitales para alimentar algoritmos
+capaces de estimar la probabilidad de compra.
+
+La adopción de tecnología de apoyo a la fuerza de ventas no produce beneficios de
+manera automática. \citeA{ahearne2007sales} muestran que el impacto de los sistemas
+basados en CRM sobre la efectividad comercial depende de que los representantes
+integren la herramienta en su rutina de trabajo, y no meramente de su
+disponibilidad. Esta observación resulta determinante para el diseño de la
+solución del presente trabajo: la utilidad de un modelo predictivo se realiza
+únicamente si sus resultados llegan al asesor comercial dentro del entorno donde
+efectivamente toma decisiones.
+
+\section{Conjuntos de datos}
+
+Un conjunto de datos es una recolección estructurada de datos organizados y
+almacenados para su análisis o procesamiento. Puede contener valores numéricos,
+texto, imágenes o audio, y construirse a partir de una o de múltiples fuentes. La
+selección de un conjunto de datos apropiado constituye uno de los primeros pasos
+para el entrenamiento de modelos de aprendizaje automático
+\cite{han2011data}.
+
+En contextos empresariales, los conjuntos de datos rara vez se diseñan con fines
+analíticos: provienen de sistemas transaccionales cuyo propósito es operativo. Esto
+implica que su estructura refleja el proceso que los generó, incluyendo sus
+inconsistencias, sus campos incompletos y sus cambios de criterio a lo largo del
+tiempo \cite{berry2004data, blattberg2008database}. La preparación de los datos,
+en consecuencia, no es una etapa preliminar menor sino una parte sustantiva del
+trabajo analítico.
+
+\section{Inteligencia artificial y aprendizaje automático}
+
+El aprendizaje automático es la subdisciplina de la inteligencia artificial que
+permite a los algoritmos discernir patrones a partir de datos de entrenamiento y
+generar predicciones sobre instancias no observadas, sin necesidad de programar
+explícitamente cada escenario. \citeA{hastie2009elements} señalan que el aprendizaje
+automático se centra en la construcción de modelos predictivos mediante la captura
+de regularidades estadísticas en los datos, abarcando métodos supervisados para
+resultados etiquetados, técnicas no supervisadas para estructuras ocultas y
+aprendizaje por refuerzo para la toma de decisiones secuenciales.
+
+En el contexto de este trabajo, el aprendizaje automático sustenta dos componentes
+distintos. El aprendizaje supervisado sustenta el modelo de calificación
+de leads mediante la estimación de probabilidades de conversión. El aprendizaje
+no supervisado sustenta la segmentación de la cartera en perfiles de cliente.
+
+\subsection{Entornos para ciencia de datos}
+
+\subsubsection{Entornos de programación}
+
+Para transformar datos crudos en hallazgos, los analistas dependen de entornos de
+programación desarrollados para la ciencia de datos. El entorno analítico empleado
+en este trabajo fue Python \cite{python_about} ejecutado en Jupyter Notebook, dado
+que permite integrar limpieza de datos, modelado, evaluación, interpretación y
+documentación en un flujo reproducible. Python cuenta con bibliotecas ampliamente
+utilizadas para análisis y aprendizaje automático, entre ellas \texttt{pandas},
+\texttt{scikit-learn} \cite{pedregosa2011scikit}, \texttt{imbalanced-learn} y
+\texttt{SHAP}, lo que lo hace adecuado para el desarrollo de modelos predictivos y
+análisis explicables.
+
+\subsubsection{Comunicación de los resultados}
+
+Comunicar los hallazgos requiere más que código. La visualización de datos
+constituye la representación gráfica de información mediante tablas, gráficos y
+mapas; permite traducir números abstractos en narrativas accesibles a partes
+interesadas no técnicas \cite{tableau_dataviz}.
+
+Power BI es la plataforma de análisis empresarial que permite conectar, visualizar
+y compartir datos dentro de una organización. El lienzo final para estos hallazgos
+son los tableros o \emph{dashboards}: herramientas de visualización y análisis que
+muestran el estado de indicadores clave en una misma pantalla, con capacidad
+interactiva para profundizar en los datos subyacentes y aplicar filtros
+\cite{hashemipour2024dashboard}. A través de ellos, las personas a cargo de la toma
+de decisiones pueden monitorear el progreso y detectar anomalías con rapidez.
+
+\section{Recorrido del cliente y embudo comercial}
+
+El recorrido del cliente o \emph{customer journey} representa todas las
+interacciones que un usuario ha tenido con una marca antes, durante y después de la
+compra. Mapear este recorrido ayuda a descubrir las necesidades del cliente,
+identificar los puntos de contacto clave y proponer mejoras de diseño
+\cite{miller2025journey}. Un recorrido típico incluye las etapas de conocimiento,
+consideración, compra, retención y promoción.
+
+Un \emph{lead} se refiere a una persona o empresa que ha expresado interés en un
+producto o servicio específico, lo que indica que puede ser un cliente potencial
+\cite{salesforce2024prospect}. No todos los leads son equivalentes: su calidad
+depende de factores como el presupuesto, la alineación con el producto y el nivel
+de compromiso. Conforme avanzan por el canal de ventas, aquellos que cumplen
+ciertas características se convierten en prospectos, entendidos como contactos
+calificados con mayor probabilidad de conversión.
+
+La progresión desde el conocimiento inicial hasta la compra se conceptualiza como
+el embudo comercial: el camino que sigue un cliente potencial desde que
+conoce el producto hasta que lo adquiere, lo que permite monitorear el progreso y
+eliminar obstáculos \cite{long2023funnel}. Segmentar el embudo en etapas ayuda a
+diagnosticar dónde se pierden los prospectos y a construir intervenciones
+específicas por etapa. La secuencia de actividades que compone este proceso ha sido
+formalizada en la literatura de ventas como una progresión de pasos identificables
+\cite{moncrief2005evolution}, cuya representación explícita es requisito para
+determinar en qué punto puede insertarse una intervención analítica.
+
+\section{Calificación y priorización de leads}
+
+Dado que los recursos son limitados, las organizaciones necesitan un método
+sistemático para priorizar contactos. La calificación de leads o \emph{lead
+scoring} asigna valores numéricos a los leads basándose en datos demográficos y
+comportamientos observados, lo que ayuda a los equipos de mercadeo y ventas a
+identificar qué clientes potenciales tienen mayor probabilidad de convertirse en
+clientes \cite{wu2023state}.
+
+Los sistemas tradicionales dependen de reglas heurísticas que clasifican los leads
+según la experiencia y el juicio personal. \citeA{gonzalezflores2025relevance}
+documentan un caso en el que el sistema tradicional se basaba en una matriz de
+calificación fija que asignaba manualmente puntos a acciones específicas, como
+solicitudes de cotización o interacciones por correo electrónico. Este enfoque
+refleja una lógica basada en reglas, donde la importancia de cada variable es
+predefinida por juicio experto en lugar de aprenderse de los patrones presentes en
+los datos. Como resultado, el sistema carecía de flexibilidad para capturar
+interacciones complejas entre variables y conducía a una priorización arbitraria y
+subóptima. La alternativa predictiva desarrollada en ese estudio evaluó quince
+algoritmos de clasificación, y el modelo de mejor desempeño alcanzó una exactitud
+del 98.39\,\%.
+
+Es importante advertir que una cifra de exactitud tan elevada debe interpretarse en
+función de la tasa base del problema estudiado: como se argumenta en la
+Sección~\ref{sec:mt-desbalance}, en problemas con clase minoritaria escasa la
+exactitud deja de ser informativa. Las revisiones sistemáticas del área
+\citeA{wu2023state} coinciden en que el valor de los modelos de calificación reside
+en su capacidad de ordenar la cartera, más que en su exactitud agregada.
+
+La gestión formal de leads mediante sistemas dedicados se ha asociado, además, con
+el desempeño comercial. \citeA{ohiomah2019lead} hallaron que el uso de sistemas de
+gestión de leads se asoció con el desempeño de ventas internas mediante variables
+como la intensidad de seguimiento de leads, la venta adaptativa y las habilidades
+técnicas y comerciales de los representantes.
+
+\section{Tiempo de respuesta y conversión de leads}
+
+La adopción de canales digitales ha transformado la manera en que las
+organizaciones adquieren clientes potenciales, permitiendo generar grandes
+volúmenes de leads en periodos cortos. Aunque esta expansión crea oportunidades,
+también introduce un reto operativo de asignación de recursos.
+
+El tiempo de respuesta se ha consolidado como uno de los factores más estudiados
+por su influencia en la conversión. Se refiere al lapso entre el momento en que un
+prospecto manifiesta interés y el primer intento de la organización por
+comunicarse con él. \citeA{oldroyd2011short} reportaron que, en su estudio de
+respuestas a leads generados en línea, contactar dentro de la primera hora se
+asoció con una mayor probabilidad de calificación que demorar el contacto. Estos
+resultados se refieren a la calificación de leads y no necesariamente a la
+conversión final.
+
+\citeA{sabnis2013blackhole} introdujeron el concepto del \emph{agujero negro de los
+leads comerciales} para describir situaciones en las que los leads generados por
+mercadeo nunca reciben seguimiento por parte de los representantes de ventas. Sus
+hallazgos demuestran que la presión de la carga de trabajo y la capacidad limitada
+del equipo comercial impiden que las compañías aprovechen la totalidad de los leads
+generados.
+
+Desde la perspectiva de la ingeniería industrial, esta situación constituye un
+problema de priorización y asignación de recursos bajo restricción de
+capacidad. Cuando la demanda de atención comercial excede la capacidad instalada,
+la organización debe determinar cómo distribuir ese recurso escaso para maximizar
+los resultados. Bajo esas condiciones, tratar a todos los leads de manera
+equivalente no es una política óptima, especialmente cuando las probabilidades de
+conversión varían sustancialmente entre prospectos. Esta formulación —y no la de
+clasificación— es la que fundamenta el diseño de la evaluación operativa del
+presente trabajo.
+
+\section{Modelado predictivo en el sector inmobiliario}
+
+En el sector inmobiliario, predecir el interés y la conversión de los prospectos
+resulta más complejo que en otras industrias debido a factores económicos,
+emocionales y contextuales. Esta complejidad reduce la eficacia de los enfoques
+que dependen únicamente de reglas estáticas o de la intuición comercial. En
+aplicaciones inmobiliarias, el conocimiento del dominio y las herramientas
+analíticas pueden complementar la identificación y priorización de oportunidades,
+siempre que los datos disponibles y el proceso comercial permitan su uso
+operativo.
+
+En la literatura de \emph{lead scoring} se han comparado algoritmos como la
+regresión logística y los métodos de ensamble \cite{nygard2020automating}, con
+resultados que dependen de las características del conjunto de datos, la
+definición del objetivo y las métricas de evaluación empleadas. Por su parte,
+\citeA{tan2024leveraging} implementaron un modelo de \emph{random forest} para
+calificación de leads en el sector educativo, alcanzando un 89.46\,\% de exactitud
+mediante variables como la duración de visita a las páginas y la interacción por
+correo electrónico.
+
+Esta evidencia es consistente con que los modelos predictivos superan a los
+sistemas tradicionales porque aprenden patrones complejos a partir del
+comportamiento histórico. Este punto fundamenta la selección de modelos del
+presente trabajo,
+aunque —como se documenta en el capítulo de resultados— la ventaja de los métodos
+de ensamble sobre la regresión logística no se reprodujo en el caso analizado.
+
+\subsection{Modelos analíticos aplicables al proceso comercial}
+
+Cuatro familias de aprendizaje supervisado resultan particularmente relevantes para
+un sistema de calificación de leads: regresión logística, árboles de decisión,
+\emph{random forest} y \emph{gradient boosting}.
+
+\paragraph{Regresión logística.} Constituye el punto de partida natural para la
+calificación de leads. Modela la probabilidad de conversión como una función
+sigmoide de una combinación lineal de las variables de entrada
+\cite{hosmer2013applied}:
+
+\begin{equation}
+P(y=1 \mid \mathbf{x}) = \frac{1}{1 + e^{-(\beta_0 + \boldsymbol{\beta}^{\top}\mathbf{x})}}
+\end{equation}
+
+Equivalentemente, modela de forma lineal el logaritmo de la razón de momios:
+
+\begin{equation}
+\log\left(\frac{P(y=1 \mid \mathbf{x})}{1 - P(y=1 \mid \mathbf{x})}\right)
+= \beta_0 + \boldsymbol{\beta}^{\top}\mathbf{x}
+\end{equation}
+
+
+La interpretación de los coeficientes permite conocer cómo cada variable influye en la probabilidad estimada de que ocurra el evento de interés. El signo del coeficiente indica la dirección de esta relación: un coeficiente positivo se asocia con una mayor probabilidad del evento, mientras que uno negativo se asocia con una menor probabilidad, manteniendo constantes las demás variables. Matemáticamente, al transformar el coeficiente mediante $e^{\beta_i}$ se obtiene una medida de cuánto cambia la relación entre la probabilidad de que ocurra el evento y la probabilidad de que no ocurra ante un incremento unitario de $x_i$.
+
+Esta facilidad de interpretación representa una ventaja en contextos donde las partes interesadas necesitan comprender cómo se toman las decisiones. Además, la regresión logística tiene un bajo costo computacional y genera estimaciones de probabilidad que pueden utilizarse para establecer umbrales operativos. Su calibración debe evaluarse empíricamente y, cuando sea necesario, ajustarse \cite{niculescumizil2005predicting}. Sin embargo, su desempeño puede ser limitado cuando existen relaciones no lineales complejas entre las variables, a menos que estas interacciones se incorporen explícitamente al modelo.
+
+La regularización L2 es una técnica utilizada para evitar que el modelo dependa excesivamente de determinadas variables. Para ello, añade a la función de pérdida una penalización $\lambda\|\boldsymbol{\beta}\|_2^2$ que aumenta cuando los coeficientes del modelo adquieren valores elevados. Como resultado, el modelo favorece coeficientes de menor magnitud, lo que ayuda a reducir el sobreajuste y a mejorar su capacidad de generalización ante nuevos datos \cite{hastie2009elements, james2021introduction}. El parámetro $\lambda$ controla la intensidad de esta penalización: cuanto mayor es su valor, mayor es la restricción aplicada a los coeficientes. En \texttt{scikit-learn}, este comportamiento se controla mediante el parámetro $C$, definido de forma inversa a la intensidad de regularización, de manera que valores menores de $C$ implican una regularización más fuerte.
+
+\paragraph{Árboles de decisión.} Son útiles cuando las partes interesadas desean
+visualizar reglas condicionales explícitas. Resultan rápidos de entrenar e
+inherentemente interpretables, aunque tienden al sobreajuste, entendido como el
+ajuste excesivo a los datos de entrenamiento que impide generar predicciones
+precisas sobre datos distintos \cite{ibm_overfitting}.
+
+\paragraph{Random forest.} Es un conjunto de árboles de decisión construidos sobre
+muestras \emph{bootstrap}, restringiendo el subconjunto de variables candidatas en
+cada división para descorrelacionar los árboles \cite{breiman2001random}. Tiende a
+obtener mayor exactitud y AUC que los árboles individuales, manteniéndose robusto
+frente al ruido. En aplicaciones de calificación de leads se han reportado
+exactitudes entre 82\,\% y 89\,\% con AUC superiores a 0.75
+\cite{nygard2020automating, tan2024leveraging}. Sus limitaciones son la menor
+interpretabilidad y el mayor costo computacional.
+
+\paragraph{Gradient boosting.} Ajusta secuencialmente predictores débiles sobre los
+residuos del ensamble acumulado, corrigiendo los errores de los modelos previos
+\cite{hastie2009elements}. Alcanza AUC ligeramente superiores al \emph{random
+forest} en conjuntos bien estructurados \cite{nygard2020automating}, aunque
+requiere un ajuste más cuidadoso y es más sensible a la calidad de los datos.
+
+\subsection{Codificación de variables categóricas}
+
+La codificación \emph{one-hot} representa una variable categórica de $m$ niveles
+mediante $m$ variables binarias. Su limitación aparece con alta cardinalidad:
+categorías con muy pocas observaciones producen columnas casi constantes cuyo
+coeficiente estimado tiene varianza elevada, lo que introduce ruido y riesgo de
+sobreajuste. La práctica habitual consiste en agrupar en una categoría residual
+común aquellas categorías cuya frecuencia no alcanza un umbral mínimo.
+
+\section{El desbalance de clases}
+\label{sec:mt-desbalance}
+
+Un conjunto de datos está desbalanceado cuando la clase de interés representa una
+fracción reducida del total \cite{fernandez2018learning}. El desbalance afecta al
+aprendizaje por dos vías: la función de pérdida queda dominada por la clase
+mayoritaria, y las métricas basadas en la exactitud dejan de discriminar entre
+modelos útiles e inútiles.
+
+\subsection{Estrategias de tratamiento}
+
+Las estrategias se agrupan en tres familias. Las de nivel de datos
+modifican la distribución de la muestra de entrenamiento mediante submuestreo de la
+clase mayoritaria o sobremuestreo de la minoritaria; la técnica SMOTE genera
+observaciones sintéticas interpolando entre cada instancia minoritaria y sus
+vecinos más cercanos \cite{chawla2002smote}. Las de nivel de algoritmo
+incorporan pesos por clase en la función de pérdida, en la línea del aprendizaje
+sensible al costo \cite{elkan2001foundations, ling2010cost}. Las de nivel
+de decisión conservan el modelo y ajustan únicamente el umbral de clasificación.
+
+\citeA{burez2009handling} evaluaron sistemáticamente estas alternativas en un
+problema de clasificación binaria con clase minoritaria muy escasa y encontraron
+que el remuestreo no siempre mejora el desempeño, particularmente cuando la
+métrica de interés es de ordenamiento y no de clasificación estricta.
+
+Constituye un requisito metodológico que cualquier remuestreo se aplique
+exclusivamente a los pliegues de entrenamiento y nunca a los de validación:
+aplicarlo antes de particionar filtra información del conjunto de prueba y produce
+estimaciones optimistas.
+
+\section{Evaluación de modelos y definición de éxito}
+
+El desarrollo de los modelos es solo uno de los componentes del proceso analítico.
+La evaluación provee evidencia de que un modelo distingue confiablemente distintos
+resultados y de que puede apoyar la toma de decisiones dentro de un contexto de
+negocio específico. Dado que ninguna métrica captura por sí sola todos los aspectos
+del desempeño predictivo, resulta necesario emplear múltiples criterios
+\cite{provost2013data, abbott2015defining}.
+
+\subsection{Matriz de confusión}
+
+La matriz de confusión es el marco fundamental para evaluar modelos de
+clasificación. Es una tabla de contingencia que compara las predicciones generadas
+con los valores reales observados \cite{han2011data}. Está conformada por cuatro
+resultados posibles: verdaderos positivos (VP), verdaderos negativos (VN), falsos
+positivos (FP) y falsos negativos (FN) \cite{provost2013data}.
+
+En el contexto de la calificación de leads, estos resultados tienen implicaciones
+operativas directas. Un verdadero positivo representa un lead correctamente
+identificado como de alta probabilidad. Un falso positivo implica inversión de
+tiempo en un lead que no convierte. Un falso negativo representa una oportunidad
+perdida: un lead valioso que no recibe la atención necesaria para progresar.
+
+\subsection{Exactitud}
+
+La exactitud mide la proporción de casos clasificados correctamente respecto al
+total de observaciones evaluadas \cite{han2011data}:
+
+\begin{equation}
+\text{Exactitud} = \frac{VP + VN}{VP + VN + FP + FN}
+\end{equation}
+
+A pesar de su popularidad, presenta limitaciones severas en conjuntos
+desbalanceados. Cuando las conversiones representan una fracción pequeña del total,
+un modelo puede obtener exactitud elevada simplemente prediciendo la clase
+mayoritaria, aunque falle en identificar los positivos que interesan al negocio
+\cite{provost2013data}. En el caso analizado en este trabajo, con una tasa base de
+conversión del 1.18\,\% sobre el universo completo, un clasificador trivial supera
+el 98\,\% de exactitud sin aportar valor alguno.
+
+\subsection{Precisión}
+
+La precisión mide la proporción de predicciones positivas que son efectivamente
+correctas \cite{kuhn2013applied}:
+
+\begin{equation}
+\text{Precisión} = \frac{VP}{VP + FP}
+\end{equation}
+
+Responde a la pregunta: de todos los leads identificados como probables de
+convertir, ¿cuántos realmente convirtieron? Resulta especialmente relevante cuando
+contactar un lead poco calificado representa un costo tangible en esfuerzo
+comercial o costo de oportunidad.
+
+\subsection{Sensibilidad}
+
+La sensibilidad o \emph{recall} mide la proporción de positivos reales que el
+modelo identifica correctamente:
+
+\begin{equation}
+\text{Sensibilidad} = \frac{VP}{VP + FN}
+\end{equation}
+
+Responde a la pregunta: de todos los leads que eventualmente convirtieron,
+¿cuántos fueron identificados por el modelo? Es especialmente importante cuando el
+costo de no identificar un cliente potencial excede el costo de contactar a uno que
+no convierte. Maximizar la sensibilidad, sin embargo, incrementa el número de
+falsos positivos, lo que revela la necesidad de considerar ambas métricas de forma
+conjunta.
+
+\subsection{Curva ROC y ROC-AUC}
+
+La curva ROC es una herramienta gráfica que evalúa el desempeño de modelos de
+clasificación binaria a través de todos los umbrales posibles, mapeando la tasa de
+verdaderos positivos contra la tasa de falsos positivos \cite{fawcett2006introduction}.
+
+Un umbral de clasificación es el límite de probabilidad utilizado para asignar cada
+observación a una clase. Los modelos predictivos generan probabilidades, y los
+leads se clasifican como positivos cuando su probabilidad estimada excede el umbral
+seleccionado. Modificar el umbral altera el número de predicciones positivas y, en
+consecuencia, las métricas de evaluación.
+
+El área bajo la curva (ROC-AUC) resume esta información en un valor entre 0 y 1.
+Un valor de 0.5 representa discriminación equivalente al azar; 1.0 representa
+discriminación perfecta, mientras que valores inferiores a 0.5 indican un
+ordenamiento inverso respecto de la clase positiva \cite{hanley1982meaning,
+fawcett2006introduction}. Su ventaja es la independencia respecto de un umbral
+específico. Diversos autores señalan, sin embargo, que puede resultar insuficiente
+para determinar el impacto operativo, dado que evalúa todos los umbrales posibles y
+no necesariamente refleja las condiciones bajo las cuales la organización opera
+\cite{hand2009measuring, drummond2006cost}.
+
+\subsection{Curva precisión--sensibilidad y PR-AUC}
+
+Con clases fuertemente desbalanceadas, la curva ROC puede resultar excesivamente
+optimista, porque la tasa de falsos positivos se calcula sobre una clase
+mayoritaria muy numerosa y una cantidad grande de falsos positivos apenas la altera.
+La curva precisión--sensibilidad es preferible en este escenario, ya que ambas
+magnitudes se refieren exclusivamente a la clase minoritaria
+\cite{saito2015precision}. \citeA{davis2006relationship} establecieron la relación
+formal entre ambos espacios, demostrando que dominar en el espacio ROC implica
+dominar en el espacio precisión--sensibilidad, pero no a la inversa.
+
+El área bajo esta curva (PR-AUC) tiene como referencia la tasa base de positivos y
+no el valor $0.5$: sobre una tasa base de $0.033$, un PR-AUC de $0.22$ representa
+una mejora de casi siete veces respecto del azar.
+
+\subsection{Lift y curvas de ganancia}
+
+El \emph{lift} es la razón entre la tasa de positivos en el subconjunto
+seleccionado por el modelo y la tasa base del universo
+\cite{piatetsky1999estimating}. Un \emph{lift} de $4$ en el primer decil indica que
+ese decil concentra cuatro veces más positivos de los que le corresponderían por
+azar.
+
+La curva de ganancia acumulada representa, para cada porcentaje del universo
+ordenado por probabilidad descendente, la proporción de positivos capturada. Es la
+métrica que traduce de forma más directa el desempeño estadístico a capacidad
+operativa, y por ello resulta central en aplicaciones de mercadeo directo
+\cite{ling1998data} y en la evaluación de modelos orientada al ordenamiento
+\cite{provost2003tree}.
+
+\section{Métricas secundarias de evaluación}
+
+Debido al desbalance de clases presente en el conjunto de datos, la evaluación del
+modelo no se limitó a una medida única de desempeño. En particular, la exactitud
+global puede ofrecer una apreciación excesivamente favorable cuando la clase
+mayoritaria concentra gran parte de las observaciones, ya que un clasificador puede
+alcanzar un porcentaje alto de aciertos aun sin identificar adecuadamente la clase
+minoritaria. Por ello, las métricas secundarias se calcularon sobre predicciones
+fuera de muestra, es decir, sobre observaciones no empleadas para ajustar el
+modelo. Este procedimiento permite estimar el desempeño de generalización y reducir
+el sesgo optimista derivado de evaluar el modelo en los mismos datos utilizados
+durante el entrenamiento.
+
+Se emplearon el área bajo la curva ROC, el Brier score, el coeficiente de
+correlación de Matthews y el estadístico $\kappa$ de Cohen. En conjunto, estas
+métricas evalúan dimensiones complementarias del desempeño: la capacidad de
+discriminación, la calidad de las probabilidades estimadas, la asociación entre las
+clases observadas y predichas, y el acuerdo entre dichas clasificaciones una vez
+descontado el componente atribuible al azar.
+
+\subsection{Área bajo la curva ROC}
+
+El área bajo la curva ROC (\emph{Receiver Operating Characteristic Area Under the
+Curve}, ROC-AUC) se utilizó para evaluar la capacidad discriminativa del modelo. La
+curva ROC representa, para distintos umbrales de clasificación, la relación entre
+la sensibilidad o tasa de verdaderos positivos y la tasa de falsos positivos. Por
+consiguiente, el ROC-AUC resume la capacidad del modelo para diferenciar entre las
+observaciones pertenecientes a la clase positiva y aquellas pertenecientes a la
+clase negativa.
+
+\citeA{hanley1982meaning} establecieron una interpretación probabilística
+ampliamente aceptada del área bajo la curva ROC: esta representa ``\emph{the
+probability that a randomly chosen diseased subject is correctly rated or ranked
+with greater suspicion than a randomly chosen non-diseased subject}'' (p.~29) [la
+probabilidad de que un caso positivo seleccionado aleatoriamente reciba una
+puntuación o clasificación superior a la de un caso negativo seleccionado
+aleatoriamente; traducción propia]. En el contexto de esta investigación, un
+ROC-AUC elevado indica que el modelo tiende a asignar mayores puntuaciones o
+probabilidades a los casos de la clase positiva que a los de la clase negativa.
+
+El ROC-AUC toma valores entre 0 y 1. Un valor de 1 representa discriminación
+perfecta, mientras que un valor de 0.5 indica una capacidad discriminativa
+equivalente al azar. No obstante, esta métrica no permite determinar si las
+probabilidades estimadas son numéricamente precisas. Un modelo puede discriminar
+adecuadamente entre ambas clases y, al mismo tiempo, sobreestimar o subestimar de
+forma sistemática la probabilidad real del evento. Por ello, el ROC-AUC se
+complementó con el Brier score, el cual evalúa directamente el desempeño de las
+predicciones probabilísticas.
+
+\subsection{Brier score}
+
+El Brier score se empleó como una medida de desempeño probabilístico global. Esta
+métrica calcula el error cuadrático medio entre la probabilidad predicha de que
+ocurra un evento y el resultado observado. Para un desenlace binario, se expresa
+como:
+
+\begin{equation}
+\text{Brier score}=\frac{1}{n}\sum_{i=1}^{n}(\hat{p}_{i}-y_i)^2,
+\end{equation}
+
+donde $\hat{p}_{i}$ corresponde a la probabilidad predicha de pertenecer a la clase
+positiva para la observación $i$, y $y_i$ representa el resultado observado, con
+valor 1 cuando el evento ocurre y 0 cuando no ocurre.
+
+\citeA{brier1950verification} propuso esta aproximación para la ``\emph{verification
+of forecasts expressed in terms of probability}'' (p.~1) [verificación de
+pronósticos expresados en términos de probabilidad; traducción propia]. En términos
+prácticos, el Brier score penaliza la diferencia entre la probabilidad asignada por
+el modelo y el resultado real; además, penaliza con mayor severidad las
+predicciones erróneas realizadas con alta confianza. Por ejemplo, si el modelo
+asigna una probabilidad de 0.90 a un evento que finalmente no ocurre, el error
+individual es $(0.90-0)^2=0.81$. En cambio, si asigna una probabilidad de 0.55 al
+mismo evento no observado, el error es $(0.55-0)^2=0.3025$.
+
+El Brier score adopta valores menores cuando las probabilidades predichas se
+aproximan más a los resultados observados; el valor óptimo es 0. En consecuencia,
+esta medida complementa el ROC-AUC: mientras este último evalúa la capacidad del
+modelo para ordenar correctamente los casos positivos y negativos, el Brier score
+evalúa la exactitud global de las probabilidades generadas. Debe precisarse que el
+Brier score no constituye, por sí solo, una medida exclusiva de calibración; más
+bien, refleja el desempeño probabilístico global e incorpora aspectos vinculados
+tanto con la calibración como con la discriminación \cite{riley2024evaluation}.
+
+\subsection{Coeficiente de correlación de Matthews}
+
+El coeficiente de correlación de Matthews (\emph{Matthews Correlation Coefficient},
+MCC) se utilizó como una medida complementaria para evaluar la concordancia entre
+las etiquetas observadas y las etiquetas predichas por el modelo
+\cite{matthews1975comparison}. El MCC se calcula a partir de los cuatro componentes
+de la matriz de confusión: verdaderos positivos ($TP$), verdaderos negativos
+($TN$), falsos positivos ($FP$) y falsos negativos ($FN$):
+
+\begin{equation}
+\text{MCC}=
+\frac{TP \times TN-FP \times FN}
+{\sqrt{(TP+FP)(TP+FN)(TN+FP)(TN+FN)}}.
+\end{equation}
+
+El coeficiente oscila entre $-1$ y $1$. Un valor de 1 representa una clasificación
+perfecta; un valor de 0 indica que no existe asociación predictiva superior a la
+esperada por azar; y un valor de $-1$ refleja una clasificación completamente
+inversa a las clases verdaderas.
+
+\citeA{chicco2020advantages} sostienen que el MCC ``\emph{produces a high score
+only if the prediction obtained good results in all of the four confusion matrix
+categories}'' (p.~2) [produce una puntuación alta únicamente si la predicción
+obtiene buenos resultados en las cuatro categorías de la matriz de confusión;
+traducción propia]. Esta característica es especialmente relevante ante el
+desbalance de clases, debido a que impide que el desempeño del modelo sea valorado
+positivamente solo por clasificar correctamente los casos de la categoría
+predominante.
+
+A diferencia del ROC-AUC y del Brier score, el MCC se calcula sobre etiquetas de
+clase y no sobre probabilidades continuas. Por tanto, su estimación requiere
+definir un umbral para transformar las probabilidades predichas en clasificaciones
+finales. Dicho umbral debe establecerse según el objetivo del modelo, la
+prevalencia de la clase positiva y las consecuencias asociadas con falsos positivos
+y falsos negativos.
+
+\subsection{Estadístico \texorpdfstring{$\kappa$}{kappa} de Cohen}
+
+El estadístico $\kappa$ de Cohen se empleó para cuantificar el acuerdo entre las
+clases observadas y las etiquetas predichas, descontando la proporción de acuerdo
+que podría ocurrir por azar. Se calcula mediante la siguiente expresión:
+
+\begin{equation}
+\kappa=\frac{p_o-p_e}{1-p_e},
+\end{equation}
+
+donde $p_o$ representa la proporción de acuerdo observada entre las clasificaciones
+reales y predichas, mientras que $p_e$ corresponde a la proporción de acuerdo
+esperada por azar a partir de las distribuciones marginales de las categorías.
+
+\citeA{cohen1960coefficient} definió este estadístico como una medida de
+``\emph{agreement corrected for chance}'' (p.~37) [acuerdo corregido por azar;
+traducción propia]. Aunque inicialmente se propuso para evaluar la concordancia
+entre evaluadores que asignan categorías nominales, puede aplicarse a la
+comparación entre las etiquetas reales y las etiquetas generadas por un
+clasificador.
+
+El valor de $\kappa$ puede variar entre $-1$ y $1$. Un valor de 1 representa
+concordancia perfecta; un valor de 0 indica un acuerdo equivalente al esperado por
+azar; y los valores negativos indican un acuerdo inferior al que se esperaría
+aleatoriamente. Su principal utilidad en el presente estudio radica en que
+complementa la exactitud global, dado que una proporción elevada de aciertos puede
+ser parcialmente atribuible a la distribución predominante de una de las clases.
+
+No obstante, el estadístico $\kappa$ puede verse afectado por la prevalencia de las
+categorías y por la distribución marginal de las predicciones. Por ello, su
+interpretación se realizó de forma conjunta con la matriz de confusión, el
+coeficiente de Matthews, el ROC-AUC y el Brier score, evitando atribuir el
+desempeño del modelo a una única métrica.
+
+\section{Validación de modelos}
+
+La validación cruzada estratificada de $k$ pliegues divide el conjunto en $k$
+subconjuntos preservando la proporción de clases, entrena $k$ modelos y evalúa cada
+uno sobre el pliegue que no observó \cite{james2021introduction}. La estratificación
+es indispensable cuando la clase minoritaria es escasa, pues una partición aleatoria
+simple puede producir pliegues sin casos positivos.
+
+Las predicciones \emph{out-of-fold} consisten en asignar a cada observación la
+predicción del modelo que no la incluyó en su entrenamiento. Esto permite construir
+un vector de predicciones honestas para la totalidad del conjunto, sobre el cual
+calcular métricas globales sin reservar una porción de los datos.
+
+\subsection{Fuga de información}
+
+La fuga de información ocurre cuando el conjunto de predictores incorpora, directa
+o indirectamente, información que no estaría disponible en el momento en que la
+predicción debe emitirse. Es especialmente frecuente en datos provenientes de
+sistemas transaccionales, donde ciertos campos se completan únicamente después de
+que el desenlace ha ocurrido. Su síntoma característico es un desempeño de
+validación anormalmente alto que se desploma al desplegar el modelo.
+
+\subsection{Interpretación del modelo}
+
+La importancia por permutación permite evaluar cuánto depende el desempeño del modelo de cada variable. Para calcularla, los valores de una variable se desordenan aleatoriamente, mientras las demás permanecen sin cambios, y se observa cuánto disminuye el desempeño del modelo. Una caída mayor indica que la variable tenía mayor importancia para realizar las predicciones. Este procedimiento no requiere volver a entrenar el modelo y puede aplicarse a distintos tipos de algoritmos \cite{breiman2001random}.
+
+Los valores SHAP complementan este análisis al explicar cómo contribuye cada variable a las predicciones realizadas por el modelo. Para una observación específica, permiten identificar qué variables aumentaron o disminuyeron la predicción y en qué medida. El método se fundamenta en los valores de Shapley, provenientes de la teoría de juegos cooperativos, para distribuir la predicción entre las distintas variables de acuerdo con su contribución \cite{lundberg2017unified}.
+
+\section{Segmentación mediante análisis de conglomerados}
+
+La segmentación de clientes mediante algoritmos de agrupamiento es una técnica
+establecida en el análisis de mercados \cite{kaufman1990finding}.
+
+\subsection{El algoritmo K-Means}
+
+K-Means \cite{macqueen1967some, lloyd1982least} particiona $n$ observaciones en $k$
+grupos minimizando la suma de cuadrados intra-cluster:
+
+\begin{equation}
+\min_{S_1,\dots,S_k} \sum_{j=1}^{k} \sum_{\mathbf{x}_i \in S_j} \|\mathbf{x}_i - \boldsymbol{\mu}_j\|^2
+\end{equation}
+
+donde $\boldsymbol{\mu}_j$ es el centroide del grupo $S_j$. El algoritmo alterna
+entre asignar cada observación a su centroide más cercano y recalcular los
+centroides hasta la convergencia. Al tratarse de una optimización local, el
+resultado depende de la inicialización, por lo que la práctica estándar consiste en
+ejecutar múltiples inicializaciones y retener la de menor inercia.
+
+\subsection{Escalamiento y ponderación}
+
+K-Means opera sobre distancias euclidianas, por lo que es sensible a la escala de
+las variables. Cuando conviven variables continuas con categóricas codificadas
+mediante \emph{one-hot} surge un problema adicional: un bloque categórico de $m$
+niveles aporta $m$ dimensiones a la distancia, de modo que las variables con más
+categorías pesan artificialmente más. Una corrección habitual consiste en dividir
+cada bloque entre $\sqrt{m}$, igualando su contribución esperada a la distancia
+total. La winsorización —recorte de valores extremos a un múltiplo del rango
+intercuartílico— limita la influencia de observaciones atípicas sobre la posición de
+los centroides.
+
+\subsection{Evaluación de la calidad del agrupamiento}
+
+Al no existir una etiqueta de referencia, la calidad se evalúa mediante índices
+internos:
+
+\begin{description}
+    \item[Coeficiente de silueta.] Compara, para cada observación, su distancia media
+    a su propio grupo con su distancia media al grupo vecino más cercano
+    \cite{rousseeuw1987silhouettes}. Toma valores en $[-1,1]$.
+    \item[Índice de Davies--Bouldin.] Razón media entre dispersión intra-cluster y
+    separación entre centroides \cite{davies1979cluster}. Valores menores son
+    mejores.
+    \item[Índice de Calinski--Harabasz.] Razón entre dispersión inter-cluster e
+    intra-cluster \cite{calinski1974dendrite}. Valores mayores son mejores.
+\end{description}
+
+El índice de Rand ajustado mide la coincidencia entre dos particiones corrigiendo
+por el acuerdo esperado al azar, y resulta útil para verificar la estabilidad de una
+solución al reentrenarla sobre un universo distinto. Ninguno de estos índices
+sustituye el criterio de interpretabilidad: una partición con índices excelentes
+pero grupos sin lectura sustantiva carece de valor para la toma de decisiones
+\cite{kaufman1990finding}.
+
+\subsection{Validación externa mediante una variable no utilizada}
+
+Cuando se dispone de una variable de resultado que no participó en la formación de
+los grupos, contrastar su distribución entre clusters constituye una validación
+externa: si los grupos formados solo con atributos de perfil muestran resultados
+significativamente distintos, la partición captura estructura con relevancia
+sustantiva y no meramente geométrica.
+
+\section{Pruebas estadísticas empleadas}
+
+\begin{description}
+    \item[ANOVA de una vía y Tukey HSD.] Contrastan si las medias de una variable
+    continua difieren entre grupos y, en caso afirmativo, qué pares específicos
+    difieren controlando el error por comparaciones múltiples
+    \cite{tukey1949comparing}.
+    \item[Prueba $\chi^2$ y V de Cramér.] Evalúan la asociación entre dos variables
+    categóricas. La V de Cramér normaliza el estadístico $\chi^2$ al intervalo
+    $[0,1]$, proporcionando un tamaño de efecto comparable entre variables con
+    distinto número de categorías \cite{cramer1946mathematical}.
+    \item[Intervalo de confianza de Wilson.] Intervalo para una proporción binomial
+    con mejor cobertura que la aproximación normal cuando la proporción es cercana a
+    cero \cite{wilson1927probable}.
+    \item[Prueba de dos proporciones.] Contrasta si la proporción observada en un
+    subgrupo difiere significativamente de la del resto de la población.
+\end{description}
+
+\section{Simulación de Monte Carlo}
+
+Los métodos de Monte Carlo estiman propiedades de una distribución mediante
+muestreo aleatorio repetido \cite{raychaudhuri2008introduction, rubinstein2016simulation}.
+Su utilidad en este contexto es construir una distribución de referencia empírica:
+al extraer repetidamente subconjuntos aleatorios del universo de leads y contar las
+conversiones capturadas, se obtiene la distribución completa del resultado que
+produciría la ausencia de priorización.
+
+Cuando el muestreo es sin reemplazo desde una población finita con $N$ elementos de
+los cuales $K$ son positivos, el número de positivos en una extracción de tamaño $n$
+sigue exactamente una distribución hipergeométrica:
+
+\begin{equation}
+P(X = x) = \frac{\binom{K}{x}\binom{N-K}{n-x}}{\binom{N}{n}}
+\end{equation}
+
+La disponibilidad de la forma analítica permite verificar que las conclusiones
+obtenidas por simulación no dependen del error de muestreo asociado a un número
+finito de iteraciones.
+
+\section{Gestión por procesos y notación BPMN}
+
+La gestión de procesos de negocio concibe la organización como un conjunto de
+procesos interrelacionados susceptibles de ser modelados, medidos y mejorados de
+forma sistemática \cite{dumas2018fundamentals}. Su ciclo de vida comprende la
+identificación del proceso, su descubrimiento y modelado, el análisis de sus
+ineficiencias, el rediseño, la implementación y el monitoreo.
+
+BPMN es el estándar de notación gráfica para representar procesos de negocio
+\cite{omg2011bpmn}. Define un vocabulario de eventos, actividades, compuertas de
+decisión, flujos y carriles de responsabilidad que permite representar de forma
+inequívoca quién ejecuta cada actividad y bajo qué condición. Su valor en un
+proyecto analítico es doble: documenta el proceso comercial existente con precisión
+suficiente para identificar en qué punto del flujo debe insertarse la intervención
+analítica, y proporciona un lenguaje común entre el equipo técnico y las áreas de
+negocio.
+
+\section{Metodología CRISP-DM}
+
+CRISP-DM describe las fases típicas de un proyecto de minería de datos, las tareas
+asociadas a cada una y las relaciones entre ellas, ofreciendo una visión integral
+del ciclo de vida analítico \cite{chapman2000crispdm, hotz2018crispdm}. La
+metodología consiste en seis etapas:
+
+\begin{enumerate}
+    \item \textbf{Entendimiento del negocio}, donde se definen los objetivos y el
+    criterio de éxito.
+    \item \textbf{Entendimiento de los datos}, incluyendo recolección, exploración y
+    evaluación de su calidad.
+    \item \textbf{Preparación de los datos}, incluyendo selección, limpieza,
+    integración y transformación.
+    \item \textbf{Modelado}, con selección de técnicas, diseño de los conjuntos de
+    entrenamiento y prueba, construcción y ajuste de modelos.
+    \item \textbf{Evaluación}, donde se verifica si el modelo cumple con los
+    requerimientos del negocio.
+    \item \textbf{Implementación}, que incluye la planificación para producción y el
+    monitoreo del modelo.
+\end{enumerate}
+
+Su naturaleza cíclica permite regresar a etapas anteriores cuando se detectan
+problemas o nuevas oportunidades. Esta propiedad resultó determinante en el
+presente trabajo: los hallazgos de la fase de preparación —en particular la
+estructura de la ausencia de datos— obligaron a redefinir el universo de modelado
+después de haber avanzado en la fase de evaluación.

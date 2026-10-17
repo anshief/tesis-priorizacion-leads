@@ -1,0 +1,129 @@
+% ================================================================================
+% ANTECEDENTES
+% ================================================================================
+
+\section{Investigación previa en calificación predictiva de leads}
+
+La sustitución de sistemas de calificación basados en reglas por modelos ajustados
+sobre el historial de conversión tiene antecedentes consolidados.
+\citeA{gonzalezflores2025relevance} documentan un caso en el que un esquema tradicional de lead scoring, basado en asignación manual de valores por parte de marketing y ventas, fue reemplazado por un modelo predictivo seleccionado tras comparar quince algoritmos de clasificación, logrando mejoras sustanciales en la capacidad de distinguir leads de alta y baja calidad. Su diagnóstico de que los métodos manuales tienden a ser arbitrarios y menos precisos coincide con el del proceso comercial analizado en este trabajo.
+
+En la literatura de \emph{lead scoring} se han comparado algoritmos como la
+regresión logística y los métodos de ensamble \citeA{nygard2020automating}, con
+resultados que dependen de las características del conjunto de datos, la
+definición del objetivo y las métricas de evaluación empleadas.
+\citeA{tan2024leveraging} obtienen resultados equivalentes en el sector educativo,
+apoyándose en variables de comportamiento digital como la duración de visita a las
+páginas.
+
+La revisión de \citeA{wu2023state} sobre el estado de los modelos de calificación y
+su impacto en el desempeño comercial matiza estos resultados: la ganancia
+documentada depende menos del algoritmo seleccionado que de la calidad de las
+variables disponibles y de la integración efectiva del modelo en el flujo de
+trabajo del equipo de ventas. Esta observación es consistente con
+\citeA{ahearne2007sales}, quienes muestran que el impacto de los sistemas CRM sobre
+la efectividad comercial se materializa únicamente cuando los representantes
+incorporan la herramienta en su rutina.
+
+\section{Capacidad comercial y priorización bajo restricción}
+
+\citeA{sabnis2013blackhole} documentan el fenómeno del \emph{agujero negro de los
+leads}: la fracción de oportunidades generadas por mercadeo que no son perseguidos debido a la capacidad limitada del equipo comercial. Su aporte al
+presente trabajo es conceptual: establece que el problema no es de generación sino
+de asignación, lo que justifica formular la evaluación en términos de conversiones
+capturadas bajo una restricción de capacidad, y no en términos de exactitud
+agregada.
+
+Los estudios sobre el tiempo de respuesta a leads web muestran que las
+probabilidades de contacto y calificación disminuyen a medida que aumenta el tiempo
+transcurrido desde la solicitud. \citeA{oldroyd2011short} encuentran que intentar
+contactar a un prospecto dentro de la primera hora se asocia con una mayor
+probabilidad de calificación que hacerlo después de ese lapso. En consecuencia, bajo
+una capacidad limitada de atención comercial, la oportunidad de respuesta debe
+considerarse junto con la probabilidad de conversión al definir el orden de
+priorización.
+
+\citeA{ohiomah2019lead} aportan evidencia empírica de que el uso de sistemas de
+gestión de leads se asocia con un mejor desempeño en ventas internas, mediante una
+mayor intensidad de seguimiento de leads, una venta más adaptativa y el
+fortalecimiento de competencias técnicas y de venta. Este hallazgo sustenta la
+decisión de entregar la priorización como un artefacto operativo integrado al
+proceso de gestión de leads, y no únicamente como un reporte analítico
+independiente.
+
+\section{Desbalance de clases y evaluación orientada al beneficio}
+
+En problemas de clasificación binaria con clase minoritaria muy escasa,
+\citeA{verbeke2012new} desarrollan un enfoque explícitamente orientado al
+beneficio, basado en el beneficio máximo potencial de intervenir sobre una fracción
+óptima de clientes, y muestran que seleccionar modelos mediante métricas
+exclusivamente estadísticas puede conducir a decisiones subóptimas.
+\citeA{burez2009handling} examinan el tratamiento del desbalance de clases
+empleando AUC y \emph{lift}, y encuentran que el submuestreo avanzado CUBE no
+mejora el desempeño predictivo, lo que indica que las estrategias de remuestreo no
+garantizan mejoras en métricas de discriminación u ordenamiento. De forma
+consistente, en el presente trabajo SMOTE no mejoró las métricas de ordenamiento y
+deterioró la calibración; este resultado debe interpretarse como un hallazgo
+específico de los datos y modelos analizados, no como una consecuencia general del
+remuestreo.
+
+En una línea complementaria, \citeA{devriendt2018literature} revisan el modelado de
+elevación (\emph{uplift modeling}), cuyo objetivo es estimar el efecto incremental
+de una intervención sobre un resultado, en lugar de predecir únicamente la
+probabilidad de dicho resultado. Este enfoque quedó fuera del alcance del presente
+trabajo, pues requiere datos que permitan identificar el efecto de una acción
+comercial frente a una condición de comparación —idealmente mediante un diseño
+experimental aleatorizado—. No obstante, constituye una extensión pertinente si se
+dispone de intervenciones comerciales observables y datos adecuados para estimar sus
+efectos causales.
+
+\section{Segmentación de clientes}
+
+La segmentación de clientes mediante técnicas de agrupamiento constituye una práctica consolidada en investigación de mercados y analítica comercial. \cite{kaufman1990finding} presentan fundamentos y métodos clásicos de análisis de conglomerados. Estas técnicas pueden emplearse, entre otros fines, para apoyar la definición de territorios comerciales, la asignación de carteras y la identificación de perfiles de clientes, siempre que se valide empíricamente la utilidad operativa de los segmentos obtenidos.
+
+En la base de datos utilizada en este trabajo, varios atributos relevantes, por ejemplo, motivación de compra, estado civil y tipología de unidad de interés, son categóricos. Esta característica exige precaución al utilizar K-Means estándar, ya que este algoritmo se basa en centroides y distancias euclídeas, y por tanto está definido de forma natural para variables numéricas. Para datos categóricos o mixtos, pueden emplearse codificaciones adecuadas junto con criterios de escalamiento y ponderación, o bien métodos específicamente diseñados para este tipo de información, como K-prototypes o KAMILA. La estrategia adoptada en este trabajo debe especificar la codificación aplicada, la métrica de distancia y el criterio usado para fijar los pesos, a fin de evitar que el número de categorías o la escala de un bloque de variables domine la segmentación.
+
+\section{Modelado predictivo en el sector inmobiliario}
+
+La investigación aplicada al sector inmobiliario ha documentado que la combinación
+de juicio experto con modelos analíticos habilita la identificación de
+oportunidades no evidentes \cite{palmer2025bridging}. La complejidad
+particular del sector, tales como ciclos de decisión largos, desembolso elevado y participación
+de varias personas en la decisión, reduce la eficacia de los enfoques basados
+exclusivamente en reglas estáticas.
+
+
+\section{Aporte diferencial del presente trabajo}
+
+Respecto a los antecedentes revisados, este trabajo aporta cuatro elementos:
+
+\begin{enumerate}
+    \item \textbf{Tratamiento de la ausencia de datos como señal.} La literatura
+    consultada asume habitualmente conjuntos de datos con completitud razonable. El
+    contexto de este trabajo: un CRM donde el perfil se completa progresivamente
+    durante la calificación, obliga a un tratamiento distinto, en el que la propia
+    estructura de ausencia se incorpora como información predictiva en lugar de
+    eliminarse mediante imputación.
+    \item \textbf{Evaluación contra una distribución de referencia explícita.} En
+    lugar de reportar únicamente métricas de discriminación, el desempeño se
+    contrasta contra la distribución completa del resultado que produciría la
+    ausencia de priorización, obtenida por simulación y verificada analíticamente
+    contra la distribución hipergeométrica exacta.
+    \item \textbf{Restricción deliberada de generalización.} La exclusión de la
+    identidad del proyecto del conjunto de predictores, con cuantificación explícita
+    del costo estadístico que implica, responde al requisito de aplicabilidad a
+    proyectos residenciales futuros.
+    \item \textbf{Integración del análisis de procesos con el modelo predictivo.} El
+    modelado BPMN del proceso comercial no se limita a documentar el estado actual:
+    determina el punto de inserción de la intervención analítica y define el momento
+    en que la predicción debe emitirse, lo que a su vez fija qué variables pueden
+    considerarse disponibles y cuáles constituyen fuga de información.
+    \item \textbf{Contextualización en el mercado inmobiliario guatemalteco.}
+    El trabajo aporta evidencia empírica obtenida en el contexto de empresas
+    desarrolladoras de vivienda en la Ciudad de Guatemala, a partir de datos de
+    proyectos residenciales locales. Esta contextualización permite evaluar el
+    comportamiento del enfoque de priorización bajo las características propias
+    del entorno comercial analizado, en lugar de asumir directamente que los
+    resultados obtenidos en otros contextos son transferibles al mercado
+    guatemalteco.
+\end{enumerate}

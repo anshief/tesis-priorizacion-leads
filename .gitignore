@@ -1,0 +1,41 @@
+# Local environments and configuration
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.DS_Store
+.env
+.env.*
+.claude/
+.codex/
+.agents/
+# Private data and exports, including future additions
+**/data/
+**/Data/
+*.xlsx
+*.xls
+*.parquet
+*.feather
+*.pbix
+*.zip
+**/scoring_dataset_powerbi*
+**/asignacion*.csv
+**/leads*.csv
+# LaTeX build products
+*.aux
+*.log
+*.out
+*.toc
+*.lof
+*.lot
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.bbl
+*.blg
+
+# No original or generated model binaries
+*.pkl
+*.joblib
+**/modelos/*.json

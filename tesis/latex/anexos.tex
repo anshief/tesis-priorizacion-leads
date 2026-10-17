@@ -1,0 +1,808 @@
+% ================================================================================
+% ANEXOS
+% ================================================================================
+
+\chapter{Modelo BPMN del proceso comercial}
+\label{anx:bpmn}
+
+La Figura~\ref{fig:anx-bpmn} resume el proceso comercial documentado durante el
+levantamiento del flujo de trabajo. El diagrama muestra la interacción entre el
+asistente comercial, el sistema CRM y el asesor comercial desde el ingreso y la
+asignación del lead hasta la reserva del proyecto.
+
+El detalle de los subprocesos que conforman este flujo se presenta en las
+Figuras~\ref{fig:bpmn-validar} a~\ref{fig:bpmn-visita} del capítulo de resultados.
+
+\begin{figure}[H]
+\centering
+\includegraphics[angle=90,height=0.93\textheight]{figuras/bpmn_macroflow.png}
+\caption{Modelo BPMN completo del proceso comercial de gestión de leads}
+\label{fig:anx-bpmn}
+\fuentepropia
+\end{figure}
+
+\chapter{Diccionario de variables}
+\label{anx:diccionario}
+
+El diccionario reúne las 62 variables que conformaron el conjunto de datos final.
+Para cada una se presenta el tipo de dato, una descripción, los valores o rangos
+observados y el porcentaje de datos faltantes, calculado sobre los 437{,}648
+registros analizados. El Cuadro~\ref{anx:cuad-diccionario} documenta así la
+estructura de la información utilizada en las distintas etapas del análisis.
+
+{\small
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{|p{2.6cm}|p{1.3cm}|p{4.6cm}|p{3.8cm}|p{1.15cm}|}
+\caption{Diccionario de variables del conjunto de datos final integrado}
+\label{anx:cuad-diccionario} \\
+\hline
+\textbf{Nombre de columna} & \textbf{Tipo} & \textbf{Descripción} & \textbf{Valores posibles / rango} & \textbf{\% ausente} \\
+\hline
+\endfirsthead
+\multicolumn{5}{c}{\tablename\ \thetable{} -- continuación de la página anterior} \\
+\hline
+\textbf{Nombre de columna} & \textbf{Tipo} & \textbf{Descripción} & \textbf{Valores posibles / rango} & \textbf{\% ausente} \\
+\hline
+\endhead
+\hline
+\multicolumn{5}{r}{\textit{continúa en la siguiente página}} \\
+\endfoot
+\hline
+\endlastfoot
+\path{canal_de_anuencia} & Texto & Canal por el que el lead otorgó anuencia o fue captado formalmente. Puede diferir del canal de contacto. & Detalle de categorías omitido en la edición pública & 0.4\% \\ \hline
+\path{canal_de_contacto} & Texto & Canal por el que se realizó el primer contacto con el lead. La normalización se limitó a mayúsculas y minúsculas, errores tipográficos y separadores. & Detalle de categorías omitido en la edición pública & 0.6\% \\ \hline
+\path{estado_civil} & Texto & Estado civil declarado del lead. La categoría 'Solter@ + hijos' se unificó con 'Solter@' y la información sobre hijos se trasladó a tiene\_hijos. & Detalle de categorías omitido en la edición pública & 88.3\% \\ \hline
+\path{fecha_creacion_trato} & Fecha (texto) & Fecha en que el trato fue creado en el CRM. & Detalle de categorías omitido en la edición pública & 24.7\% \\ \hline
+\path{ingreso_familiar} & Texto & Rango de ingreso familiar mensual en quetzales. Formato inconsistente (algunos con prefijo 'Q', otros sin él). & Detalle de categorías omitido en la edición pública & 83.9\% \\ \hline
+\path{lugar_trabajo} & Texto & Zona o municipio donde trabaja el lead. & Detalle de categorías omitido en la edición pública & 89.6\% \\ \hline
+\path{lugar_vivienda} & Texto & Zona o municipio de residencia actual del lead (texto libre). & Detalle de categorías omitido en la edición pública & 88.5\% \\ \hline
+\path{nucleo_familiar} & Texto & Número de personas en el núcleo familiar del lead. & Detalle de categorías omitido en la edición pública & 91.4\% \\ \hline
+\path{opciones_visitadas} & Texto & Proyectos de la competencia visitados previamente por el lead. & Detalle de categorías omitido en la edición pública & 75.8\% \\ \hline
+\path{participantes_en_credito} & Texto & Número de personas que participarían en el crédito hipotecario. & Detalle de categorías omitido en la edición pública & 86.5\% \\ \hline
+\path{proyecto} & Texto & Proyecto inmobiliario de EmpresaAnonimizada de interés del lead. & Detalle de categorías omitido en la edición pública & 0.0\% \\ \hline
+\path{razon_de_compra} & Texto & Razón principal de compra declarada por el lead. & Detalle de categorías omitido en la edición pública & 80.3\% \\ \hline
+\path{sector_referidor} & Texto & Sector o tipo de referidor que presentó al lead. Clasificación interna del equipo comercial. & Detalle de categorías omitido en la edición pública & 84.2\% \\ \hline
+\path{sexo} & Texto & Sexo registrado del lead. & Detalle de categorías omitido en la edición pública & 56.6\% \\ \hline
+\path{tipo_unidad} & Texto & Tipo o tamaño de unidad de interés declarado por el lead. & Detalle de categorías omitido en la edición pública & 70.6\% \\ \hline
+\path{apartamento_no_label} & Texto & Número de unidad o apartamento asociado al trato. Proviene de columnas *\_label de PT2 y de la columna homónima 'Unidad \#' en las reexportaciones PT3. & Detalle de categorías omitido en la edición pública & 99.2\% \\ \hline
+\path{apto_referidor_label} & Texto & Número de apartamento del cliente que refirió al lead. Como no existe un equivalente inequívoco en las reexportaciones PT3, el campo se dejó vacío para esas filas para evitar mezclarlo con 'sector\_referidor'. & Detalle de categorías omitido en la edición pública & 99.9\% \\ \hline
+\path{bodega_asignada_label} & Texto & Identificador de la bodega asignada al trato, cuando aplica. & Detalle de categorías omitido en la edición pública & 99.2\% \\ \hline
+\path{campania} & Texto & Nombre de la campaña de mercadeo que originó el lead. Se normalizaron textos duplicados, sufijos 'Copia', errores tipográficos y separadores. & Detalle de categorías omitido en la edición pública & 22.6\% \\ \hline
+\path{cantidad_parqueos_label} & Texto & Número de parqueos incluidos o solicitados en el trato. & Detalle de categorías omitido en la edición pública & 99.2\% \\ \hline
+\path{csi_calificacion_amenidades_label} & Decimal & Calificación de satisfacción del cliente (CSI, escala 1–5) sobre las amenidades del proyecto, recolectada en encuesta post-visita/post-venta. & Detalle de categorías omitido en la edición pública & 98.7\% \\ \hline
+\path{csi_calificacion_apartamento_label} & Decimal & Calificación de satisfacción del cliente (CSI, escala 1–5) sobre el apartamento, recolectada en encuesta post-visita/post-venta. & Detalle de categorías omitido en la edición pública & 98.7\% \\ \hline
+\path{csi_calificacion_proyecto_label} & Decimal & Calificación de satisfacción del cliente (CSI, escala 1–5) sobre el proyecto en general, recolectada en encuesta post-visita/post-venta. & Detalle de categorías omitido en la edición pública & 98.7\% \\ \hline
+\path{csi_comentarios_adicionales_label} & Texto & Comentario textual libre asociado a la encuesta de satisfacción del cliente (CSI). & Detalle de categorías omitido en la edición pública & 98.8\% \\ \hline
+\path{csi_conocimiento_asesor_label} & Decimal & Calificación de satisfacción del cliente (CSI, escala 1–5) sobre el conocimiento técnico del asesor comercial. & Detalle de categorías omitido en la edición pública & 98.7\% \\ \hline
+\path{csi_tiempo_seguimiento_label} & Decimal & Calificación de satisfacción del cliente (CSI, escala 1–5) sobre el tiempo de seguimiento recibido. & Detalle de categorías omitido en la edición pública & 98.7\% \\ \hline
+\path{cuota_deseada_label} & Texto & Rango de cuota mensual deseada por el lead para el crédito hipotecario, en quetzales. & Detalle de categorías omitido en la edición pública & 93.0\% \\ \hline
+\path{edad} & Decimal & Edad declarada del lead en años. Los valores fuera del rango de 18 a 90 años se trataron como faltantes durante la limpieza base. & Detalle de categorías omitido en la edición pública & 89.7\% \\ \hline
+\path{fuente_pt2} & Texto & Nombre del proyecto de origen de la exportación armonizada (histórico de PT2, reutilizado también para identificar el proyecto de origen en las reexportaciones PT3). & Detalle de categorías omitido en la edición pública & 0.0\% \\ \hline
+\path{id_trato} & Entero & Identificador único del trato comercial en el CRM de EmpresaAnonimizada. Se utiliza como clave primaria del conjunto de datos. & Detalle de categorías omitido en la edición pública & 0.0\% \\ \hline
+\path{ingreso_crm_label} & Texto & Campo de ingreso registrado directamente en el CRM. Contiene valores numéricos y texto ('SI'/'NO'), por lo que requiere limpieza adicional antes de utilizarse con fines analíticos. & Detalle de categorías omitido en la edición pública & 99.6\% \\ \hline
+\path{modelo_label} & Texto & Modelo o tipología de unidad de interés o reservada (p. ej., '2 habitaciones', 'Bodega', 'Casa A'). & Detalle de categorías omitido en la edición pública & 99.2\% \\ \hline
+\path{nps_recomendacion_proyecto_label} & Decimal & Puntaje de Net Promoter Score (NPS, escala 0–10) sobre la probabilidad de que el cliente recomiende el proyecto. & Detalle de categorías omitido en la edición pública & 98.7\% \\ \hline
+\path{parqueo_1_label} & Texto & Identificador del primer parqueo asignado al trato. & Detalle de categorías omitido en la edición pública & 99.5\% \\ \hline
+\path{parqueo_2_label} & Texto & Identificador del segundo parqueo asignado al trato (cuando el trato incluye más de uno). & Detalle de categorías omitido en la edición pública & 99.4\% \\ \hline
+\path{parqueo_3_label} & Texto & Identificador del tercer parqueo asignado al trato (cuando el trato incluye más de dos). & Detalle de categorías omitido en la edición pública & 99.2\% \\ \hline
+\path{person_id} & Decimal & Identificador numérico de la persona/prospecto en el CRM. Una persona puede tener múltiples tratos. & Detalle de categorías omitido en la edición pública & 0.1\% \\ \hline
+\path{proyref_label} & Texto & Proyecto de EmpresaAnonimizada en el que el referidor (cliente que refirió al lead) ya es o fue cliente. & Detalle de categorías omitido en la edición pública & 99.5\% \\ \hline
+\path{razon_inversion_label} & Texto & Razón de inversión declarada por el lead cuando 'razon\_de\_compra' = Inversión (p. ej., Renta, Venta o Renta/Venta). & Detalle de categorías omitido en la edición pública & 99.6\% \\ \hline
+\path{tiene_hijos} & Texto & Indica si el lead declaró tener hijos. Se normalizó a partir de 52 variantes originales e incorpora la información trasladada desde estado\_civil. & Detalle de categorías omitido en la edición pública & 93.5\% \\ \hline
+\path{tipo_modelo_label} & Texto & Variante constructiva del modelo de unidad (Convencional o Modificado). & Detalle de categorías omitido en la edición pública & 99.3\% \\ \hline
+\path{tipovisita_label} & Texto & Tipo de visita realizada al proyecto: Programada, Sorpresa o Inédita. & Detalle de categorías omitido en la edición pública & 98.1\% \\ \hline
+\path{torre_referidora_label} & Texto & Torre o unidad referidora asociada al trato, cuando el lead llegó por referencia de otro cliente. & Detalle de categorías omitido en la edición pública & 92.6\% \\ \hline
+\path{ubicacion_bodega_label} & Texto & Ubicación (sótano/nivel) de la bodega asignada al trato. & Detalle de categorías omitido en la edición pública & 99.4\% \\ \hline
+\path{ubicacion_parqueos_label} & Texto & Ubicación (sótano/nivel) de los parqueos asignados al trato. & Detalle de categorías omitido en la edición pública & 99.6\% \\ \hline
+\path{user_id} & Decimal & Identificador numérico del asesor comercial asignado al trato. & Detalle de categorías omitido en la edición pública & 0.0\% \\ \hline
+\path{target_won} & Entero & Variable objetivo binaria. 1 = el lead convirtió al alcanzar Reserva o una etapa posterior; 0 = no convirtió. Se construyó a partir de 'status' y 'Etapa Trato', variables excluidas del modelado por fuga de información. & Detalle de categorías omitido en la edición pública & 0.0\% \\ \hline
+\path{proyecto_fuera_alcance} & Entero & Indicador binario que identifica si el proyecto asociado al lead es proyecto01, proyecto04 o proyecto05, los proyectos de menor volumen en este conjunto de datos. & Detalle de categorías omitido en la edición pública & 0.0\% \\ \hline
+\path{fuente_dataset} & Texto & Variable de trazabilidad que identifica el origen del registro en el conjunto de datos integrado. & Detalle de categorías omitido en la edición pública & 0.0\% \\ \hline
+\path{campania_plataforma} & Texto & Plataforma de distribución inferida a partir del nombre de la campaña. 'portal\_demo' corresponde al prefijo PortalAnonimizado; 'directo', a campañas propias de EmpresaAnonimizada; y 'otro', a eventos, corredores y otros canales. & Detalle de categorías omitido en la edición pública & 22.6\% \\ \hline
+\path{campania_tipo} & Texto & Tipo o formato publicitario de la campaña. Clasificado por prioridad decreciente: messenger > EmpresaAnonimizada > top > footer > inbox > fan\_page > open\_house > evento > segmentada > presupuesto\_diario > whatsapp > principal > leads > cotizador > otro. & Detalle de categorías omitido en la edición pública & 22.6\% \\ \hline
+\path{campania_audiencia} & Texto & Audiencia geográfica identificada a partir del nombre de la campaña. 'la' corresponde a Los Ángeles y se activa únicamente con 'USA LA' o 'EEUU LA'; 'eeuu' representa Estados Unidos en general y 'guatemala' es la categoría por defecto. & Detalle de categorías omitido en la edición pública & 22.6\% \\ \hline
+\path{rango_edad_modelo} & Texto & Rango de edad derivado de la columna 'edad' mediante los intervalos utilizados en el CRM original. La variable original 'Rango de Edad' se excluyó por su menor cobertura. & Detalle de categorías omitido en la edición pública & 89.7\% \\ \hline
+\path{municipio_proyecto} & Texto & Municipio donde se ubica el proyecto. Los proyectos incluidos en el análisis se encuentran en la Ciudad de Guatemala. & Detalle de categorías omitido en la edición pública & 3.8\% \\ \hline
+\path{zona_proyecto} & Decimal & Zona de la Ciudad de Guatemala donde se ubica el proyecto. Se incorporó como atributo geográfico del entorno. & Detalle de categorías omitido en la edición pública & 3.8\% \\ \hline
+\path{subzona_proyecto} & Texto & Subzona o colonia específica del proyecto. Complementa zona\_proyecto con un mayor nivel de detalle geográfico. & Detalle de categorías omitido en la edición pública & 5.2\% \\ \hline
+\path{m2_minimo} & Decimal & Área mínima en m² de los productos disponibles en el proyecto (todas las torres, 2024). & Detalle de categorías omitido en la edición pública & 3.8\% \\ \hline
+\path{m2_maximo} & Decimal & Área máxima en m² de los productos disponibles en el proyecto (todas las torres, 2024). & Detalle de categorías omitido en la edición pública & 3.8\% \\ \hline
+\path{precio_minimo} & Decimal & Precio mínimo de lista del proyecto en USD (2024), agregado sobre todas las torres y tipos de unidad. & Detalle de categorías omitido en la edición pública & 3.8\% \\ \hline
+\path{precio_maximo} & Decimal & Precio máximo de lista del proyecto en USD (2024), agregado sobre todas las torres y tipos de unidad. & Detalle de categorías omitido en la edición pública & 13.3\% \\ \hline
+\path{precio_m2_promedio} & Decimal & Precio promedio por m² del proyecto en USD para 2024, calculado como valor representativo del proyecto completo. & Detalle de categorías omitido en la edición pública & 3.8\% \\ \hline
+\path{precio_promedio} & Decimal & Precio promedio por unidad en USD, agregado sobre todas las torres y tipos de unidad del proyecto (2024). & Detalle de categorías omitido en la edición pública & 3.8\% \\ \hline
+\end{longtable}
+}
+
+\textbf{Nota sobre columnas redundantes.} Las columnas \path{fuente_pt2} y
+\path{fuente_dataset} registran la misma información de trazabilidad del proyecto
+bajo nombres distintos. Ambas conservan variantes de capitalización y acentuación
+para un mismo proyecto; por ejemplo, ``proyecto04'' y ``proyecto04'' aparecen como
+categorías separadas.
+
+% ================================================================================
+\chapter{Embudo de completitud de una iteración previa de leads calificados}
+\label{anx:embudo-calificados}
+% ================================================================================
+
+Este anexo conserva el embudo de
+completitud calculado en una iteración previa sobre un extracto de leads
+calificados. 
+
+\begin{table}[H]
+\centering
+\caption{Embudo de completitud de variables sobre el universo de leads calificados}
+\label{tab:embudo-calificados}
+\small
+\begin{tabular}{p{4.9cm}p{2.3cm}rr}
+\hline
+\textbf{Variable exigida de forma acumulada} & \textbf{Ausencia individual} & \textbf{N acumulado} & \textbf{Conversiones} \\
+\hline
+\texttt{fuente\_pt2}            & --      & 45{,}614 & 870 \\
+\texttt{canal\_de\_anuencia}   & $0.1\%$ & 45{,}589 & 862 \\
+\texttt{canal\_de\_contacto}   & $0.1\%$ & 45{,}574 & 862 \\
+\texttt{sexo}                   & $23.5\%$ & 34{,}881 & 831 \\
+\texttt{ingreso\_familiar}      & $38.0\%$ & 27{,}006 & 750 \\
+\texttt{razon\_de\_compra}     & $38.7\%$ & 23{,}994 & 741 \\
+\texttt{estado\_civil}          & $44.8\%$ & 21{,}891 & 734 \\
+\texttt{edad}                   & $48.7\%$ & 20{,}376 & 729 \\
+\texttt{nucleo\_familiar}       & $53.4\%$ & 17{,}180 & 716 \\
+\texttt{tiene\_hijos}           & $61.3\%$ & 15{,}200 & 672 \\
+\hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+En ese extracto histórico, exigir simultáneamente las diez variables redujo el
+número de registros de 45{,}614 a 15{,}200 y mantuvo 672 de las 870 conversiones
+registradas. 
+% ================================================================================
+\chapter{Detalle de la ingeniería de variables}
+\label{anx:featureeng}
+% ================================================================================
+
+\begin{sloppypar}
+A partir de la base depurada se generaron catorce columnas de enriquecimiento. Nueve
+incorporaron atributos de los proyectos residenciales obtenidos de fuentes externas e
+integrados mediante una tabla de referencia común: \texttt{municipio\_proyecto},
+\texttt{zona\_proyecto}, \texttt{subzona\_proyecto}, \texttt{m2\_minimo},
+\texttt{m2\_maximo}, \texttt{precio\_minimo}, \texttt{precio\_maximo},
+\texttt{precio\_m2\_promedio} y \texttt{precio\_promedio}. Otras cuatro variables
+---\texttt{campania\_plataforma}, \texttt{campania\_tipo},
+\texttt{campania\_audiencia} y \texttt{rango\_edad\_modelo}--- se derivaron de
+información ya disponible en el CRM. Finalmente, \texttt{fuente\_dataset} registró
+la procedencia de cada fila para mantener su trazabilidad. En el proyecto para el que
+no se contó con una referencia externa equivalente, los atributos de superficie y
+precio se mantuvieron como valores faltantes.
+\end{sloppypar}
+
+\begin{sloppypar}
+Para representar los predictores del Universo H se generaron variables adicionales a
+partir de los campos disponibles en etapas tempranas del proceso comercial. Las
+categorías originales de \texttt{canal\_de\_anuencia} se agruparon en
+\texttt{canal\_familia}, con siete categorías: \textit{pauta\_digital},
+\textit{portal}, \textit{directo}, \textit{referido}, \textit{presencial},
+\textit{exterior} y \textit{otro}. De esta variable se derivó
+\texttt{es\_referido}, mientras que \texttt{es\_inversion} se obtuvo de
+\texttt{razon\_de\_compra}. Los rangos de \texttt{ingreso\_familiar} se
+transformaron en \texttt{ingreso\_mid} mediante el punto medio de cada intervalo, y
+con la edad y el ingreso se construyeron \texttt{mayor\_45} e
+\texttt{ingreso\_alto}. También se generaron cuatro términos de interacción:
+\texttt{edad\_x\_ingreso}, \texttt{edad\_x\_inversion},
+\texttt{edad\_x\_referido} e \texttt{ingreso\_x\_inversion}.
+\end{sloppypar}
+
+Una vez finalizada la preparación, se verificó que el conjunto destinado al modelado
+cumpliera las condiciones definidas para su uso: ausencia de valores faltantes,
+variable de respuesta binaria, identificadores de trato únicos y exclusión de
+variables con fuga de información. También se comprobó que los seis proyectos
+continuaran representados y que el enriquecimiento mantuviera las 437{,}648
+observaciones. Las versiones con información posterior al desenlace se conservaron
+únicamente para auditoría y no se utilizaron en el entrenamiento. Las verificaciones
+no identificaron inconsistencias.
+
+% ================================================================================
+\chapter{Evidencia complementaria del análisis exploratorio}
+\label{anx:eda-complementario}
+% ================================================================================
+
+Este anexo reúne evidencia complementaria del análisis exploratorio presentado en la
+Sección~\ref{subsec:eda-powerbi} del capítulo de resultados.
+
+\section{Evolución temporal del volumen y de la conversión}
+
+La Figura~\ref{fig:tendencia-temporal} muestra la evolución mensual del volumen de
+leads y de la tasa de conversión entre agosto de 2017 y abril de 2026. El volumen
+presenta incrementos en períodos en los que coinciden campañas de varios proyectos,
+mientras que la tasa de conversión se mantiene relativamente baja a lo largo de la
+serie. Dado que el patrón temporal observado estuvo más asociado con cambios en la
+intensidad de captación que con una separación consistente de la conversión, las
+variables temporales no se incorporaron al conjunto final de predictores.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{figuras/tendencia_temporal.png}
+\caption{Evolución temporal del volumen de leads y de la tasa de conversión comercial}
+\label{fig:tendencia-temporal}
+\fuentepropia
+\end{figure}
+
+\section{Campañas publicitarias con comportamiento atípico}
+
+El análisis de dispersión por campaña identificó trece casos atípicos dentro del
+conjunto analizado (Figura~\ref{fig:campanias-atipicas}). Uno corresponde al
+cotizador disponible en la página web de uno de los proyectos, que registró una
+tasa de conversión de $10.3\%$, la más alta entre las campañas analizadas. Los doce
+casos restantes combinaron volúmenes altos de captación con tasas de conversión
+bajas o nulas. El caso más marcado fue una campaña asociada a un portal
+inmobiliario, con más de 20{,}000 leads y ninguna conversión registrada durante el
+período.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{figuras/campanias_atipicas.png}
+\caption{Dispersión de volumen de leads y tasa de conversión por campaña publicitaria}
+\label{fig:campanias-atipicas}
+\fuentepropia
+\end{figure}
+
+La comparación confirma que el volumen de captación, por sí solo, no describe el
+desempeño comercial de una campaña. Por ello, el análisis de la
+Sección~\ref{subsubsec:asimetria-canales} considera conjuntamente volumen y tasa de
+conversión. Para el modelado, la información de campaña se representó mediante
+plataforma, tipo y audiencia; no se utilizó el nombre específico de la campaña debido
+a su elevada cardinalidad y a la limitada utilidad de esa identidad para generalizar
+a campañas futuras.
+
+\section{Diferencias demográficas de menor magnitud}
+
+\subsection{Sexo}
+
+La captación se distribuyó de forma casi equitativa entre hombres y mujeres, con
+alrededor de 95{,}000 registros en cada grupo (Figura~\ref{fig:leads-sexo}). Entre
+los leads que alcanzaron la reserva, en cambio, el $62\%$ correspondió a hombres y
+el $38\%$ a mujeres (Figura~\ref{fig:convertidos-sexo}). Las tasas de conversión
+fueron de $2.33\%$ y $1.41\%$, respectivamente.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figuras/leads_sexo.png}
+        \caption{Distribución de leads captados por sexo}
+        \label{fig:leads-sexo}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[t]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\linewidth]{figuras/convertidos_sexo.png}
+        \caption{Distribución porcentual de leads convertidos por sexo}
+        \label{fig:convertidos-sexo}
+    \end{subfigure}
+    \fuentepropia
+\end{figure}
+
+\subsection{Estado civil y presencia de hijos}
+
+Entre los leads convertidos con estado civil registrado, las personas casadas
+representaron el $52.8\%$ (1{,}710 casos), las solteras el $44.0\%$ (1{,}426) y los
+futuros cónyuges el $3.2\%$ (103), como se observa en la
+Figura~\ref{fig:estado-civil-conversion}. Estas proporciones describen la composición
+del grupo convertido, pero no permiten comparar por sí solas la propensión a
+convertir porque el volumen de leads difiere entre categorías. En la variable de
+hijos, la tasa de conversión fue de $10.4\%$ entre quienes declararon tenerlos y de
+$8.4\%$ entre quienes indicaron no tenerlos. La diferencia, de dos puntos
+porcentuales, fue menor que la observada entre los extremos de los rangos de edad.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{figuras/estado_civil_conversion.png}
+\caption{Distribución de leads convertidos por estado civil registrado}
+\label{fig:estado-civil-conversion}
+\fuentepropia
+\end{figure}
+
+\subsection{Tamaño del núcleo familiar}
+
+Los registros con información sobre el tamaño del núcleo familiar se concentraron en
+hogares de una y dos personas, con 12{,}260 y 15{,}606 casos, respectivamente
+(Figura~\ref{fig:nucleo-familiar}). Las categorías de mayor tamaño tuvieron una
+representación menor: 5{,}384 leads en núcleos de tres integrantes, 3{,}385 en los
+de cuatro y 795 en los de cinco o más. Esta distribución limita la comparación entre
+categorías y, dentro del análisis descriptivo, no se observó un patrón consistente de
+conversión asociado con el tamaño del hogar.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\textwidth]{figuras/nucleo_familiar_distribucion.png}
+\caption{Leads por tamaño del núcleo familiar, convertidos y no convertidos}
+\label{fig:nucleo-familiar}
+\fuentepropia
+\end{figure}
+
+En el modelo final, ninguna de las variables descritas en esta sección presentó una
+importancia por permutación claramente distinta de cero
+(Sección~\ref{sec:res-importancia}).
+
+% ================================================================================
+\chapter{Registro de modelos evaluados}
+\label{anx:modelos-evaluados}
+% ================================================================================
+
+Este anexo registra las configuraciones evaluadas antes de seleccionar las dos
+especificaciones finales: la segmentación mediante K-Means
+(Sección~\ref{subsec:km-segmentacion}) y el modelo predictivo de conversión
+(Sección~\ref{sec:res-modelado}).
+
+En total se realizaron \textbf{812 ajustes}: \textbf{323} de segmentación,
+organizados en cuatro bloques de configuraciones, y \textbf{489} de modelado
+predictivo, distribuidos en diecisiete lotes. Para este registro, cada ajuste
+corresponde a una combinación distinta de variables, algoritmo y variante de
+entrenamiento, incluidos el universo de análisis, el tratamiento del desbalance y,
+cuando correspondía, los hiperparámetros.
+
+
+\section{Segmentación de leads (K-Means) --- 323 modelos}
+
+Para el análisis de segmentación se evaluaron 37 conjuntos de variables mediante
+K-Means, con \texttt{n\_init}=10 y una semilla fija. En cada caso se probaron
+distintos valores de $k$ y se compararon mediante el coeficiente de silueta y los
+índices de Davies--Bouldin y Calinski--Harabasz. En conjunto, se realizaron 323
+ajustes. El Cuadro~\ref{anx:cuad-km-familias} presenta los cuatro bloques de variables
+considerados y la Figura~\ref{fig:anx-km-experimentos} muestra el coeficiente de
+silueta de la solución seleccionada para cada configuración.
+
+\begin{table}[H]
+\centering
+\caption{Bloques de configuraciones de segmentación evaluadas}
+\label{anx:cuad-km-familias}
+\small
+\begin{tabular}{p{1.9cm}rrp{2.9cm}p{2.5cm}p{3.1cm}}
+\hline
+\textbf{Bloque} & \textbf{Conf.} & \textbf{Modelos} & \textbf{Qué se varió} & \textbf{Silueta (rango)} & \textbf{Resultado} \\
+\hline
+F2, E2, E3 & 3 & 27 & Tamaño del conjunto de variables (13, 10 y 7), sobre el mismo universo & 0.12 -- 0.22 & Separación baja; línea base del cuaderno. \\
+A1--A14 & 14 & 126 & Transformación numérica (log, cuantiles), tratamiento de atípicos, codificación categórica y PCA & 0.27 -- 0.86 & Búsqueda metodológica más amplia; las siluetas más altas reproducían cruces de categorías. \\
+D1--D10 & 10 & 90 & Variables de perfil demográfico, de hogar, presencia de hijos, ingreso atenuado y edad discretizada & 0.19 -- 0.36 & Ninguna alcanzó 0.50; la alta proporción de datos faltantes en las variables familiares limitó la separación. \\
+R1--R10 & 10 & 80 & Representación de la edad (continua frente a rangos) y variables de interacción categórica & 0.35 -- 0.54 & \textbf{R1} ($k=6$, edad continua ponderada a 0.25) fue la seleccionada: silueta 0.518 y seis segmentos, todos por encima del 12\,\% del universo. \\
+\hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figuras/anx_km_experimentos.png}
+\caption{Coeficiente de silueta de la solución seleccionada para cada una de las 37 configuraciones de segmentación}
+\label{fig:anx-km-experimentos}
+\fuentepropia
+\end{figure}
+
+\subsection*{Criterios de descarte de las configuraciones con mayor silueta}
+
+Siete configuraciones alcanzaron un coeficiente de silueta superior al de R1
+(0.518), pero ninguna cumplió simultáneamente los criterios definidos para la
+segmentación final. Las razones de descarte se agruparon en tres criterios.
+
+\textbf{Criterio de finalidad.} La segmentación se planteó para caracterizar
+perfiles de cliente y apoyar la adaptación del argumento comercial
+(Sección~\ref{subsec:km-segmentacion}). Por ello, se priorizaron atributos del lead,
+como edad, sexo, estado civil y razón de compra, sobre características propias del
+producto o del proyecto. Las configuraciones A7, A8 y A14 incorporan
+\texttt{precio\_promedio} o \texttt{m2\_minimo}, variables constantes dentro de cada
+proyecto. En consecuencia, una parte importante de la separación obtenida refleja
+el proyecto consultado y no diferencias adicionales entre perfiles de cliente. A7 y
+A8 también requieren \texttt{ingreso\_familiar}, variable con cerca del 38\,\% de
+datos faltantes en el universo calificado.
+
+\textbf{Criterio de circularidad.} Una silueta alta no se consideró evidencia suficiente
+de una segmentación útil cuando los grupos reproducían directamente las categorías de
+las variables utilizadas para construirlos. Este comportamiento fue especialmente
+claro en A10 ($k=5$), basada únicamente en razón de compra y tipo de unidad: los
+segmentos correspondían a combinaciones de esas mismas variables. Aunque la
+configuración alcanzó una silueta de 0.86, no aportaba una estructura adicional que
+justificara su selección.
+
+Un comportamiento similar se observó en A9, R6 y R7. En R6, la edad tuvo una
+influencia mínima y los grupos quedaron determinados principalmente por la razón de
+compra y el tipo de unidad. En R7, la interacción explícita entre estado civil y
+razón de compra generó segmentos estrechamente asociados con las categorías de esa
+misma interacción. Estas soluciones se descartaron porque la separación obtenida
+provenía principalmente de la definición de las variables de entrada y aportaba poca
+información adicional para caracterizar los perfiles.
+
+
+\textbf{Criterio de utilidad operativa.} Las configuraciones con $k=2$ (A8 y A14)
+generaron dos grupos demasiado amplios para diferenciar perfiles comerciales. En el
+otro extremo, R7 ($k=9$) produjo un segmento con menos del 5\,\% del universo. Se
+favorecieron, por tanto, soluciones con un número de grupos suficiente para distinguir
+perfiles sin fragmentar en exceso la población.
+
+\begin{table}[H]
+\centering
+\caption{Configuraciones con silueta superior a R1 y motivo de descarte}
+\label{anx:cuad-km-descarte}
+\small
+\begin{tabular}{p{1.15cm}rrp{4.3cm}p{5.4cm}}
+\hline
+\textbf{Config.} & \textbf{Silueta} & \textbf{$k$} & \textbf{Variables} & \textbf{Motivo de descarte} \\
+\hline
+A10 & 0.86 & 5 & razón de compra, tipo de unidad & Los segmentos reproducen combinaciones de las dos variables de entrada y no incorporan información adicional de edad. \\
+A14 & 0.66 & 2 & núcleo económico (7) por cuantiles & Solo genera dos grupos, definidos principalmente por el nivel de precio; razón de compra, sexo y estado civil presentan poca diferenciación. \\
+A9  & 0.66 & 6 & razón de compra, tipo de unidad, sexo & La separación depende principalmente de combinaciones de las categorías utilizadas como entrada. \\
+A8  & 0.64 & 2 & edad, ingreso, precio por cuantiles & Dos grupos definidos principalmente por el precio, con diferenciación limitada del perfil del lead. \\
+A7  & 0.60 & 6 & ingreso, precio promedio, m\textsuperscript{2} mínimo & La separación refleja principalmente características del producto o proyecto; además, requiere información de ingreso. \\
+R7  & 0.54 & 9 & 5 obligatorias + interacción civil--razón & Los segmentos reproducen las categorías de la interacción; uno de ellos concentra menos del 5\,\% del universo. \\
+R6  & 0.54 & 4 & 5 obligatorias, edad con peso 0.1 & La edad tiene una contribución mínima y la separación depende principalmente de razón de compra y tipo de unidad. \\
+\hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+Las configuraciones con silueta inferior a R1 tampoco aportaron una ventaja que
+compensara su menor separación. Las diez variantes demográficas (D1--D10) se
+ubicaron entre 0.19 y 0.36. Además, exigir \texttt{nucleo\_familiar},
+\texttt{participantes\_en\_credito} o \texttt{tiene\_hijos} reducía el universo de
+análisis por la alta proporción de datos faltantes. Dentro de la familia R, las
+variantes que discretizaron la edad en rangos (R2 y R3) obtuvieron menor separación
+que R1, que utiliza la edad de forma continua. Las configuraciones R4, R5 y R8--R10
+se mantuvieron por debajo de 0.50 sin generar perfiles suficientemente distintos.
+Las variantes exploratorias E1--E3 utilizaron variables de canal sobre universos más
+reducidos y quedaron fuera al definir el enfoque final de perfilamiento.
+
+Dentro de las configuraciones evaluadas, las soluciones construidas únicamente con
+atributos del lead alcanzaron valores de silueta cercanos a 0.50. Los valores más
+altos se obtuvieron al incorporar atributos del producto o combinaciones categóricas
+que definían los grupos de forma casi directa, opciones que no respondían a la
+finalidad del análisis. R1 ($k=6$, edad continua con peso 0.25 y silueta 0.518)
+ofreció el mejor equilibrio entre separación, interpretabilidad y utilidad comercial:
+generó seis perfiles, todos con más del 12\,\% del universo, sin incorporar variables
+de proyecto ni interacciones que determinaran los segmentos de forma casi
+predefinida.
+
+\section{Modelo predictivo de conversión --- 489 modelos}
+
+Los 489 ajustes predictivos se distribuyeron en diecisiete lotes ejecutados en tres
+cuadernos y sus carpetas de resultados. A lo largo de estas iteraciones variaron el
+conjunto de variables, el universo de análisis, el algoritmo y el tratamiento del
+desbalance de clases. La comparación y selección final se realizó sobre la conversión,
+definida como la llegada del lead a Reserva o a una etapa posterior. El
+Cuadro~\ref{anx:cuad-pred-fases} resume los lotes, su tamaño y el aporte de cada uno a
+la decisión final.
+
+\begin{table}[H]
+\centering
+\caption{Lotes de la búsqueda del modelo predictivo}
+\label{anx:cuad-pred-fases}
+\small
+\begin{tabular}{p{3.6cm}rp{7.1cm}}
+\hline
+\textbf{Lote} & \textbf{Modelos} & \textbf{Aporte a la decisión} \\
+\hline
+Grid F1--F7 & 208 & Exploración inicial de conjuntos de variables, poblaciones, estrategias de sobremuestreo y algoritmos. Permitió identificar el aporte de las variables de canal y de los indicadores de ausencia, y mostró que el sobremuestreo no mejoraba de forma consistente el ordenamiento. \\
+I1--I5 (perfil 100\,\% completo) & 24 & Cinco conjuntos anidados sobre el universo con mayor exigencia de completitud; funcionó como referencia para comparar el costo de excluir registros incompletos. \\
+J1--J6 (universo de 13{,}038 leads) & 33 & Seis conjuntos anidados. Este lote produjo la mejor configuración previa a la auditoría; J6 se definió después de identificar riesgo de fuga de información en seis variables de J5. \\
+A / B / C / E (objetivo de \emph{recall}) & 20 & Cuatro conjuntos ---variables del lead, indicadores de ausencia, variables de mayor aporte y una referencia con identidad de proyecto--- evaluados con cuatro algoritmos. Al retirar las variables con fuga de información, el porcentaje de cartera necesario para alcanzar \emph{recall} $\geq 0.70$ pasó de 37\,\% a 64.2\,\%. \\
+Universo H: LR frente a red neuronal & 2 & Comparación de la regresión logística final ($C=0.55$, 24 variables) con un perceptrón multicapa sobre el mismo conjunto. La red neuronal no mejoró el PR-AUC y presentó una calibración menos favorable. \\
+v1 --- barrido de algoritmos & 102 & Seis conjuntos de variables evaluados con nueve algoritmos, además de cuatro estrategias de balanceo aplicadas a los conjuntos de mayor tamaño (Figura~\ref{fig:comparacion-algoritmos} del capítulo de resultados). \\
+v2 --- ajuste de hiperparámetros & 18 & Búsqueda aleatoria de 40 combinaciones internas sobre tres conjuntos de variables y seis algoritmos; de esta fase se obtuvo $C=0.55$ para la regresión logística con regularización L2. \\
+v3 --- selección de variables & 37 & Incluyó 28 modelos univariados, ocho pasos de selección hacia adelante y una eliminación hacia atrás hasta un conjunto de once variables. Las tres estrategias coincidieron en el aporte de las variables de canal y de la interacción edad--ingreso. \\
+v4 --- ablación por familia & 34 & Evaluación de ocho familias de variables mediante análisis discriminante y \emph{gradient boosting}; la familia de canal mostró el mayor aporte entre las comparadas. \\
+v5 --- candidatos finalistas & 6 & Comparación de los seis candidatos con mejor desempeño en las rondas anteriores, repetida con una segunda semilla (Figura~\ref{fig:anx-pred-finalistas}). \\
+v6 --- comparación de universos & 4 & Cuatro definiciones de completitud comparadas por tamaño, conversiones retenidas y costo operativo. Esta fase llevó a seleccionar el Universo H (Figura~\ref{fig:anx-pred-universos}); una variante adicional exploró una definición todavía menos restrictiva. \\
+\hline
+\textbf{Total} & \textbf{489} & \\
+\hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+La Figura~\ref{fig:comparacion-algoritmos} del capítulo de resultados presenta el
+PR-AUC obtenido en el barrido de algoritmos por conjunto de variables. El valor más
+alto (0.226) correspondió al análisis discriminante lineal en una especificación que
+incluía la identidad del proyecto. Esa alternativa se descartó porque depender de la
+identidad del proyecto limita su aplicación a desarrollos sin historial previo
+(Sección~\ref{sec:disc-generalizacion}). Entre las especificaciones que excluyeron
+esa variable, el análisis discriminante y la regresión logística obtuvieron los
+mejores resultados. La regresión logística se seleccionó por su desempeño y por la
+posibilidad de interpretar y auditar directamente sus predicciones.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{figuras/anx_pred_finalistas.png}
+\caption{Candidatos finalistas: PR-AUC frente a porcentaje de cartera para \emph{recall} $\geq 0.70$}
+\label{fig:anx-pred-finalistas}
+\fuentepropia
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{figuras/anx_pred_universos.png}
+\caption{Reconstrucción del universo de entrenamiento: tamaño, conversiones retenidas y costo operativo}
+\label{fig:anx-pred-universos}
+\fuentepropia
+\end{figure}
+
+La comparación de universos mostró que exigir únicamente información de canal
+permitía conservar más registros, pero producía un ordenamiento menos favorable. En
+el otro extremo, aumentar los requisitos de completitud reducía el universo sin una
+mejora proporcional del desempeño. Entre las alternativas evaluadas, el Universo H
+---canal, edad, ingreso y fuente--- presentó el mejor equilibrio entre cobertura de
+la población, conversiones retenidas y desempeño operativo.
+
+El detalle de la comparación entre algoritmos sobre el conjunto base de variables
+y de las estrategias de tratamiento del desbalance se presenta en el
+Anexo~\ref{anx:seleccion-algoritmos}.
+
+% ================================================================================
+\chapter{Comparación entre algoritmos y estrategias de balanceo}
+\label{anx:seleccion-algoritmos}
+% ================================================================================
+
+La comparación de algoritmos siguió la matriz de diseño experimental descrita en la
+metodología. Se evaluaron seis conjuntos de variables predictoras, nueve algoritmos
+de clasificación supervisada y cinco estrategias de tratamiento del desbalance. Las
+comparaciones utilizaron validación cruzada estratificada de cinco pliegues y
+predicciones fuera de muestra.
+
+\section{Comparación entre algoritmos}
+
+El Cuadro~\ref{anx:cuad-algoritmos} presenta el mejor PR-AUC obtenido por cada
+algoritmo en el barrido v1 sobre \emph{P2\_Clean}, un conjunto de 18 variables de
+perfil y canal que excluye las variables con riesgo de fuga de información y la
+identidad del proyecto. La comparación se realizó mediante validación cruzada de
+cinco pliegues sobre el universo de casos completos utilizado en esa etapa
+(13{,}038 leads).
+
+\begin{table}[H]
+\centering
+\caption{Mejor PR-AUC por algoritmo sobre el conjunto base \emph{P2\_Clean} (barrido v1)}
+\label{anx:cuad-algoritmos}
+\begin{tabular}{lr}
+\hline
+\textbf{Algoritmo} & \textbf{PR-AUC} \\
+\hline
+Análisis discriminante lineal        & 0.216 \\
+Regresión logística (L2)             & 0.204 \\
+\emph{Gradient boosting}             & 0.200 \\
+\emph{Random forest}                 & 0.192 \\
+\emph{Hist.\ gradient boosting}      & 0.189 \\
+Regresión logística (L1)             & 0.162 \\
+\emph{Extra trees}                   & 0.155 \\
+AdaBoost                             & 0.141 \\
+\emph{Naive Bayes}                   & 0.050 \\
+\hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+\noindent{\footnotesize Valores tomados de \path{results_v1_grid.csv}
+(\path{qualified_run/exploracion/}).}
+
+Un perceptrón multicapa entrenado adicionalmente sobre el Universo H obtuvo un
+PR-AUC equivalente o inferior al de la regresión logística y una calibración menos
+favorable de las probabilidades estimadas. Además, su estructura no ofrece una
+ecuación directa para auditar predicciones individuales, a diferencia de la
+regresión logística.
+
+\section{Estrategias de tratamiento del desbalance}
+
+Ninguna de las cinco estrategias evaluadas mejoró de forma consistente el desempeño
+de la regresión logística. El sobremuestreo sintético modificó el PR-AUC entre 0.002
+y 0.005 respecto del modelo sin balancear, pero el cambio no mantuvo una dirección
+consistente entre configuraciones. El submuestreo aleatorio redujo el PR-AUC en
+aproximadamente 0.02; este patrón es consistente con la pérdida de información que
+supone descartar observaciones de la clase mayoritaria. Dado que el objetivo del
+modelo es ordenar los leads según su probabilidad estimada de conversión, la
+especificación final se mantuvo sin remuestreo.
+
+% ================================================================================
+\chapter{Caracterización detallada de la segmentación}
+\label{anx:km-detalle}
+% ================================================================================
+
+Este anexo presenta la configuración, las métricas de calidad y la composición de los
+seis segmentos obtenidos con el modelo final de agrupamiento. La validación externa
+de estos perfiles se discute en la Sección~\ref{subsec:km-segmentacion}.
+
+\section{Configuración y calidad interna}
+
+La configuración final representa cada lead mediante la edad estandarizada, con un
+peso de 0.25, y cuatro variables categóricas: sexo, estado civil, razón de compra y
+tipo de unidad. Estas últimas se codificaron mediante \emph{one-hot encoding}, con
+ajustes de ponderación para evitar que una variable dominara únicamente por su número
+de categorías. La solución seleccionada utiliza $k=6$. El universo de trabajo
+(Universo S) contiene 20{,}647 observaciones y 731 conversiones, equivalentes a una
+tasa de $3.54\%$. El Cuadro~\ref{cuad:embudo} contextualiza este universo respecto de
+la base consolidada completa.
+
+\begin{table}[H]
+\centering
+\caption{Métricas de calidad del modelo de segmentación final ($k=6$)}
+\label{cuad:km-metricas}
+\begin{tabular}{lr}
+\hline
+\textbf{Indicador} & \textbf{Valor} \\
+\hline
+Observaciones                       & 20{,}647 \\
+Número de clústeres ($k$)            & 6 \\
+Coeficiente de silueta              & 0.517 \\
+Índice de Davies--Bouldin           & 0.908 \\
+Índice de Calinski--Harabasz        & 13{,}121 \\
+\hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+\section{Representación visual de los segmentos}
+
+La proyección sobre los dos primeros componentes principales de la matriz de
+segmentación (Figura~\ref{fig:km-pca} del capítulo de resultados) conserva en
+conjunto el $59.4\%$ de la varianza: $32.4\%$ en el primer componente y $27.0\%$ en
+el segundo. Esta reducción se utilizó únicamente para visualizar la solución. El
+K-Means se ajustó sobre las trece dimensiones de la matriz completa y no sobre los
+dos componentes representados en la figura.
+
+En la proyección, los seis grupos muestran una separación visual consistente con el
+coeficiente de silueta obtenido. El patrón en bandas se explica por la codificación de
+variables categóricas, que produce un número limitado de combinaciones posibles en la
+representación. En los dos segmentos de inversión, que incluyen hombres y mujeres,
+el centroide se ubica entre los subgrupos definidos por sexo. En los otros cuatro
+segmentos, esta variable es más homogénea y el centroide coincide de forma más cercana
+con la zona de mayor concentración de observaciones.
+
+\section{Poder discriminante de las variables}
+
+Las cinco variables originales presentaron diferencias estadísticamente
+significativas entre segmentos ($p<0.001$ en todos los casos). Según el tamaño de
+efecto (Figura~\ref{fig:km-discriminante}), \texttt{razon\_de\_compra} fue la
+variable con mayor capacidad de diferenciación (V de Cramér $=1.00$), seguida de
+\texttt{sexo} ($0.855$), \texttt{estado\_civil} ($0.713$), \texttt{edad}
+($\eta^2=0.151$) y \texttt{tipo\_unidad} ($0.144$).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{figuras/km_discriminante.png}
+\caption{Poder discriminante de las variables en la segmentación final}
+\label{fig:km-discriminante}
+\fuentepropia
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{figuras/km_perfil.png}
+\caption{Perfil estandarizado de los seis segmentos del modelo final}
+\label{fig:km-perfil}
+\fuentepropia
+\end{figure}
+
+\section{Tamaño y composición de los segmentos}
+
+Ningún segmento concentró una proporción residual del universo
+(Figura~\ref{fig:km-tamanos}). El menor representa el $12.4\%$ de los leads y el
+mayor el $21.0\%$; el tamaño medio es de 3{,}441 observaciones. Esta distribución
+evita grupos excesivamente pequeños y facilita su interpretación como perfiles para
+el uso comercial previsto.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{figuras/km_tamanos.png}
+\caption{Distribución de tamaños de los seis segmentos del modelo final}
+\label{fig:km-tamanos}
+\fuentepropia
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Perfil de los seis segmentos del modelo final}
+\label{cuad:km-perfiles}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{cp{3.9cm}rrrccc}
+\hline
+\textbf{Seg.} & \textbf{Nombre} & \textbf{N} & \textbf{\%} & \textbf{Edad} & \textbf{Razón} & \textbf{Est.\ civil} & \textbf{Sexo} \\
+\hline
+0 & Compradora independiente            & 3{,}562 & 17.3 & 35.1 & Vivienda  & Solter@ & F \\
+1 & Inversionista consolidado           & 3{,}379 & 16.4 & 44.7 & Inversión & Casad@  & M \\
+2 & Compradora residencial consolidada  & 2{,}798 & 13.6 & 41.8 & Vivienda  & Casad@  & F \\
+3 & Comprador familiar de mayor espacio & 4{,}339 & 21.0 & 42.7 & Vivienda  & Casad@  & M \\
+4 & Comprador joven de vivienda         & 4{,}004 & 19.4 & 33.9 & Vivienda  & Solter@ & M \\
+5 & Inversionista emergente             & 2{,}565 & 12.4 & 36.4 & Inversión & Solter@ & M \\
+\hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figuras/km_composicion.png}
+\caption{Composición de cada segmento según las cuatro variables categóricas de perfilamiento}
+\label{fig:km-composicion}
+\fuentepropia
+\end{figure}
+
+La Figura~\ref{fig:km-composicion} muestra cómo se distribuyen las variables de
+perfil dentro de cada segmento. La razón de compra establece la primera diferencia:
+los segmentos 1 y 5 están integrados por leads que declaran inversión, mientras que
+los segmentos 0, 2, 3 y 4 corresponden a vivienda. Dentro de estos grupos, el sexo y
+el estado civil aportan una diferenciación adicional. Los segmentos 0 y 2 son
+femeninos y los segmentos 3 y 4 masculinos; los dos perfiles de inversión incluyen
+ambos sexos, con una proporción de hombres entre $64\%$ y $67\%$. A su vez, los
+segmentos 0, 4 y 5 concentran entre $89\%$ y $98\%$ de personas solteras, mientras
+que los segmentos 1, 2 y 3 superan el $99\%$ de personas casadas. El tipo de unidad
+presenta menor diferenciación: en los seis segmentos predominan las unidades de dos
+y tres habitaciones, en concordancia con el menor tamaño de efecto observado para
+esta variable.
+
+\chapter{Coeficientes principales del modelo predictivo final}
+\label{anx:formula}
+
+El modelo predictivo final corresponde a una regresión logística con regularización
+L2. Para cada lead, la probabilidad estimada de conversión se calcula mediante:
+
+\begin{equation}
+P(\text{conversión}) = \frac{1}{1 + e^{-z}},
+\end{equation}
+
+donde $z$ corresponde a la combinación del intercepto y los coeficientes asociados
+a las variables activas para cada observación. El Cuadro~\ref{anx:cuad-coef} presenta
+los términos con coeficientes de magnitud absoluta superior a 0.60 para documentar
+los componentes de mayor magnitud dentro de la ecuación final.
+
+\begin{table}[H]
+\centering
+\caption{Coeficientes del modelo final con magnitud absoluta superior a 0.60}
+\label{anx:cuad-coef}
+\small
+\begin{tabular}{lr}
+\hline
+\textbf{Término} & \textbf{Coeficiente} \\
+\hline
+Intercepto ($\beta_0$)                              & $-1.9577$ \\
+\texttt{canal\_de\_anuencia = Referencia}           & $-1.9124$ \\
+\texttt{canal\_de\_contacto} (categorías agrupadas) & $+1.8356$ \\
+\texttt{opciones\_visitadas = \_missing\_}          & $-1.5828$ \\
+\texttt{participantes\_en\_credito = \_missing\_}   & $-1.2080$ \\
+\texttt{campania\_tipo = footer}                    & $+0.9628$ \\
+\texttt{estado\_civil = \_missing\_}                & $-0.9310$ \\
+\texttt{razon\_de\_compra = \_missing\_}            & $-0.8512$ \\
+\texttt{canal\_de\_contacto = Visita Inédita}       & $-0.8307$ \\
+\texttt{tipo\_unidad = 2 Habs}                      & $-0.8253$ \\
+\texttt{canal\_de\_anuencia} (categorías agrupadas) & $+0.8039$ \\
+\texttt{lugar\_vivienda = \_missing\_}              & $-0.7769$ \\
+\texttt{tipo\_unidad} (categorías agrupadas)        & $+0.7742$ \\
+\texttt{campania\_tipo = inbox}                     & $+0.7465$ \\
+\texttt{lugar\_trabajo = Zona 6}                    & $+0.6915$ \\
+\texttt{campania\_audiencia = guatemala}            & $-0.6861$ \\
+\texttt{canal\_de\_contacto = Fanpage Líderes}      & $-0.6674$ \\
+\texttt{campania\_tipo = presupuesto\_diario}       & $-0.6614$ \\
+\texttt{lugar\_vivienda = Departamentos Norte}      & $+0.6539$ \\
+\texttt{canal\_de\_anuencia = Actividad Posicionamiento} & $-0.6504$ \\
+\texttt{canal\_de\_anuencia = Actividades MKT}      & $+0.6392$ \\
+\texttt{canal\_de\_contacto = WhatsApp}             & $-0.6299$ \\
+\texttt{canal\_de\_contacto = Referencia}           & $+0.6209$ \\
+\hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+\textbf{Nota sobre la interpretación.} El signo de cada coeficiente indica la
+dirección de su asociación con la probabilidad estimada de conversión, manteniendo
+constantes los demás términos y tomando como comparación la categoría de referencia
+correspondiente. La magnitud de estos coeficientes no constituye, por sí sola, un
+ordenamiento de importancia ni implica una relación causal. Las variables categóricas
+se codificaron mediante \emph{one-hot encoding}; las categorías con menos de 30
+observaciones se agruparon en una categoría residual, identificada en el cuadro como
+``categorías agrupadas''.
+
+
+\chapter{Material operativo omitido en la edición pública}
+\label{anx:guias-tecnicas}
+\label{anx:guia-powerbi-paso1}
+\label{anx:guia-scoring-paso2}
+\label{anx:guia-dashboard-comercial}
+\label{anx:manual-componentes-codigo}
+\label{anx:trazabilidad}
+\label{anx:cuad-traza}
+\label{anx:codigo-fuente}
+Las guías con capturas, la trazabilidad operativa y los anexos con código o documentación de la empresa se omiten por confidencialidad. La implementación pública adaptada se documenta en el repositorio.

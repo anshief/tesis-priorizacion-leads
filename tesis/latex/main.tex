@@ -1,0 +1,39 @@
+\documentclass[10pt,letterpaper]{report}
+\usepackage[spanish,mexico]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,microtype}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,mathtools,xfrac}
+\usepackage{graphicx,float,longtable,booktabs,array,subcaption}
+\usepackage[table]{xcolor}
+\usepackage[unicode,hidelinks]{hyperref}
+\usepackage{apacite}
+\usepackage{enumitem}
+\newcommand{\fuente}[1]{\par\smallskip{\footnotesize Fuente: #1.}\par}
+\newcommand{\fuentepropia}{\fuente{elaboración propia}}
+\renewcommand{\includegraphics}[2][]{\fbox{\parbox[c][1.1cm][c]{0.82\linewidth}{\centering\small Figura original omitida en la edición pública para proteger información comercial.}}}
+\title{Priorización de leads inmobiliarios con modelos predictivos\\[0.5cm]\large Versión pública anonimizada de la tesis}
+\author{Angie Flores\\Ingeniería Industrial\\Universidad del Valle de Guatemala}
+\date{2026}
+\begin{document}
+\maketitle
+\chapter*{Nota sobre esta edición}
+Esta es una adaptación pública para portafolio. Conserva la exposición académica y los resultados agregados del trabajo. Los nombres de empresas, proyectos, campañas y fuentes comerciales se sustituyeron por etiquetas genéricas. Se retiraron figuras originales, capturas, ejemplos empíricos del diccionario y anexos operativos que pudieran revelar información confidencial. No se incluyen bases del CRM, identificadores individuales, modelos entrenados con datos reales ni documentos internos.
+
+El código público también contiene adaptaciones. La demostración utiliza exclusivamente datos y modelos sintéticos: sus resultados no representan el rendimiento histórico de la tesis. Esta edición no sustituye el documento académico original.
+\tableofcontents
+\chapter*{Resumen}\addcontentsline{toc}{chapter}{Resumen}\input{resumen}
+\chapter*{Abstract}\input{abstract}
+\chapter{Introducción}\input{introduccion}
+\chapter{Antecedentes}\input{antecedentes}
+\chapter{Objetivos}\input{objetivos}
+\chapter{Alcance}\input{alcance}
+\chapter{Justificación}\input{justificacion}
+\chapter{Marco teórico}\input{marco_teorico}
+\input{capitulos}
+\chapter{Conclusiones}\input{conclusiones}
+\chapter{Recomendaciones}\input{recomendaciones}
+\bibliographystyle{apacite}\bibliography{bibliografia}
+\appendix\input{anexos}
+\end{document}

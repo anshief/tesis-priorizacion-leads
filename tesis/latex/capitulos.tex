@@ -1,0 +1,979 @@
+% ================================================================================
+% CAPÍTULOS CENTRALES DEL TRABAJO
+% Metodología · Resultados · Discusión y análisis
+%
+% ================================================================================
+\chapter{Metodología}
+
+La metodología de este trabajo profesional se diseñó bajo el enfoque de proceso estándar de minería de datos CRISP-DM. Esta estructura permite integrar sistemáticamente la gestión de procesos comerciales con el desarrollo de modelos predictivos y de segmentación, asegurando una secuencia lógica desde la comprensión del negocio hasta la operacionalización de las herramientas analíticas.
+
+\section{Entendimiento del negocio}
+El estudio se llevó a cabo en el departamento comercial de una empresa desarrolladora de vivienda que opera proyectos residenciales en la Ciudad de Guatemala. La unidad de análisis se definió como el cliente potencial o \emph{lead}, identificado mediante el identificador de trato comercial en el sistema de gestión de relaciones con clientes (CRM). 
+
+Como variable de respuesta para los modelos predictivos de conversión se estableció la variable binaria \texttt{target\_won}, que asigna el valor de $1$ si el cliente concreta la reserva de una vivienda, y $0$ en caso contrario. La reserva se adoptó como punto de corte del proceso de conversión comercial porque representa el primer compromiso económico verificable del prospecto, excluyendo etapas posteriores que dependen de factores financieros externos no registrados en los sistemas comerciales de la empresa.
+
+Por motivos de confidencialidad, los proyectos residenciales incluidos en el estudio se presentan mediante pseudónimos. Estos se utilizan de manera consistente a lo largo del documento y no guardan relación con el nombre comercial de los proyectos originales.
+
+\subsection{Mapeo del proceso comercial}
+\label{sec:met-bpmn}
+Para estructurar la comprensión del negocio, se diseñó un procedimiento de levantamiento de información basado en entrevistas semiestructuradas con los equipos de mercadeo, asesores comerciales y gestores de inteligencia de negocios. 
+
+La información recopilada se sintetizó en un modelo formal utilizando la notación estándar de modelado de procesos de negocio (BPMN). Este modelado se diseñó con el propósito procedimental de:
+\begin{enumerate}
+    \item Identificar las actividades secuenciales, las compuertas de decisión y los carriles de responsabilidad que componen el flujo desde la recepción del lead hasta la conversión.
+    \item Determinar el punto exacto del flujo operativo donde debe insertarse la predicción para optimizar la toma de decisiones comercial.
+    \item Evaluar la disponibilidad temporal de la información, distinguiendo las variables que se registran de manera natural en las etapas tempranas de aquellas que se generan en fases tardías del embudo de ventas.
+\end{enumerate}
+
+\section{Entendimiento de los datos}
+El estudio contempló el análisis de las bases de datos históricas extraídas del CRM comercial para los proyectos residenciales de la empresa. Procedimentalmente, se diseñó una fase de inventario y diagnóstico para evaluar la estructura de los archivos recibidos, la correspondencia entre los campos de las distintas fases de extracción y la calidad general de la información.
+
+Para caracterizar el conjunto de datos de partida, se programó un análisis exploratorio de datos (EDA) orientado a medir de forma cuantitativa:
+\begin{itemize}
+    \item La tasa de completitud de cada variable, identificando el porcentaje de valores faltantes.
+    \item La cardinalidad y distribución de frecuencias de las variables categóricas.
+    \item La distribución y el balance de clases de la variable objetivo de conversión.
+\end{itemize}
+Los resultados de este diagnóstico exploratorio se reportan de forma detallada en el Capítulo~\ref{chap:resultados}.
+
+\section{Preparación de los datos}
+A partir de las fuentes crudas del CRM, se construyó un flujo de procesamiento secuencial en Python para transformar la información en conjuntos de datos validados para el modelado. Este flujo se estructuró en las siguientes etapas procedimentales: unificación de nomenclaturas de archivos, consolidación de registros eliminando duplicados mediante el identificador de trato comercial, depuración de registros de prueba internos del sistema, y estandarización del formato de las variables de texto.
+
+\subsection{Tratamiento diferenciado de la ausencia de datos}
+En lugar de recurrir a la imputación masiva tradicional de valores faltantes (como la sustitución sistemática por la media o la moda), se diseñó un tratamiento adaptado a la naturaleza de cada variable:
+
+Para las variables categóricas (de texto), los valores nulos se transformaron en una categoría explícita denominada \texttt{\_missing\_} dentro de la misma columna. Esto permite al modelo tratar la omisión como una opción de comportamiento más dentro del proceso comercial.
+
+Por otro lado, para las variables continuas o numéricas, no es posible registrar texto. En estos casos, se imputó el valor faltante con un valor de respaldo (la mediana) y se programó la creación de una columna nueva e independiente de carácter binario, el indicador de ausencia. Este indicador toma el valor de $1$ si el dato original estaba ausente y $0$ si estaba completo, permitiendo que el modelo identifique cuándo el valor numérico corresponde a un registro real o a una imputación técnica. Este tratamiento aplica a las variables numéricas que se mantienen como opcionales dentro de un universo de modelado dado; las variables definidas como obligatorias mediante el criterio de completitud descrito a continuación quedan completas por construcción, ya que los registros que no las reportan se excluyen directamente del universo, por lo que no requieren imputación ni indicador de ausencia.
+
+\subsection{Definición de universos mediante el embudo de completitud}
+\label{sec:met-universo}
+La exigencia de datos completos para múltiples variables reduce el tamaño del conjunto de datos utilizable. Para medir este efecto de manera procedimental, se diseñó un embudo de completitud acumulado que registra de forma secuencial la pérdida marginal de observaciones y de conversiones reales a medida que se agrega cada variable de perfil.
+
+El embudo se utilizó para cuantificar el costo de completitud asociado a cada variable y detectar hasta qué punto un criterio de casos completos reducía las observaciones y conversiones disponibles. La definición definitiva de las variables obligatorias y opcionales se realizó de manera iterativa con la etapa de modelado: además de su efecto sobre el tamaño del universo, se consideró la evidencia obtenida mediante análisis de ablación y procedimientos de selección de variables. De esta forma, la ausencia se flexibilizó para aquellas variables cuya exclusión como requisito permitía recuperar observaciones sin prescindir de señal predictiva relevante, mientras que las variables que aportaban información sustantiva al modelo se mantuvieron como requisitos de completitud. El conjunto resultante se denominó Universo H.
+
+En la definición final del Universo H se exigió disponibilidad en \texttt{fuente\_pt2}, \path{canal_de_anuencia}, \texttt{canal\_de\_contacto}, \texttt{ingreso\_familiar} y \texttt{edad}. Las demás variables de perfil se mantuvieron como opcionales, de modo que su ausencia no implicara la exclusión completa del registro y se tratara conforme al procedimiento descrito en la sección anterior.
+
+Antes de converger en este criterio, se exploraron definiciones alternativas del universo de modelado, contrastando conjuntos de variables obligatorias definidos manualmente,agregando variables de forma progresiva según su relevancia de negocio (canal, canal más edad, canal más edad y lugar de trabajo), con un conjunto obtenido mediante selección automática. Este último se determinó mediante un procedimiento de eliminación hacia atrás (\textit{backward elimination}): partiendo del conjunto completo de variables candidatas, se removió en cada iteración la variable cuya ausencia producía la menor pérdida de desempeño en PR-AUC, deteniendo el proceso cuando ninguna eliminación adicional era posible sin deteriorar el modelo por encima de un umbral de tolerancia predefinido. 
+
+El modelo de segmentación no comparte este universo. Al requerir las cinco variables de perfilamiento que definen los clusters —\texttt{edad}, \texttt{sexo}, \texttt{estado\_civil}, \texttt{razon\_de\_compra} y \texttt{tipo\_unidad}—, conforma un conjunto propio, el Universo S, sobre el mismo extracto de leads calificados. Ambos universos se detallan en el Capítulo~\ref{chap:resultados}.
+
+\subsection{Construcción de variables derivadas}
+\label{sec:met-feature-engineering}
+
+Como parte de la preparación para el modelado, se construyeron variables derivadas a partir de los campos originales del CRM con el propósito de reducir la fragmentación de variables categóricas y representar relaciones que no estaban disponibles directamente en la base. En particular, las categorías de \path{canal_de_anuencia} se agruparon en siete familias: pauta digital, portal, contacto directo, referido, presencial, exterior y otros. A partir de esta clasificación se generó además el indicador binario \texttt{es\_referido}.
+
+La variable \texttt{campania} también se descompuso en características que permitieran representar de forma estructurada la información contenida en los nombres de las campañas, en lugar de utilizar cada denominación como una categoría independiente. De esta transformación se obtuvieron las variables derivadas de campaña utilizadas posteriormente en el modelado, entre ellas \texttt{campania\_plataforma}, \texttt{campania\_tipo} y \texttt{campania\_audiencia}. Las reglas de clasificación aplicadas a cada denominación se presentan en el Anexo~\ref{anx:featureeng}.
+
+Para las variables numéricas y de perfil se construyeron representaciones adicionales. El rango de \texttt{ingreso\_familiar} se transformó a su punto medio como \texttt{ingreso\_mid}, y se generaron indicadores derivados de edad, ingreso y razón de compra. Asimismo, se incorporaron cuatro términos de interacción entre edad, ingreso, motivación de inversión y condición de referido para permitir que los modelos evaluaran relaciones conjuntas entre estas características. La utilidad de estas variables se determinó posteriormente durante la comparación de especificaciones y el análisis de importancia de predictores.
+
+\section{Estrategia de modelado e iteración experimental}
+Para identificar los modelos definitivos, se diseñó un marco de experimentación estructurado en rondas sistemáticas de entrenamiento y optimización, el cual abarca tanto algoritmos de aprendizaje supervisado como no supervisado.
+
+
+\subsection{Segmentación de clientes (K-Means)}
+El componente de segmentación se diseñó para identificar perfiles típicos de leads calificados utilizando el algoritmo K-Means. Para garantizar una validación honesta y evitar análisis circulares, la variable de éxito \texttt{target\_won} se excluyó estrictamente de la etapa de entrenamiento, reservándose únicamente como un validador externo posterior.
+
+El diseño experimental de la segmentación contempló la evaluación de una \textbf{matriz combinatoria de parámetros}, variando de forma sistemática:
+\begin{itemize}
+    \item Los universos de variables de entrada (perfil demográfico frente a variables de adquisición).
+    \item Los esquemas de codificación categórica y de normalización geométrica para evitar que los bloques de variables con mayor número de categorías dominen la distancia euclidiana.
+    \item La ponderación relativa de la edad continua frente a las características categóricas del lead.
+\end{itemize}
+El rendimiento interno de cada configuración se evaluó para soluciones de $k$ grupos utilizando el coeficiente de silueta y los índices de Davies--Bouldin y Calinski--Harabasz. Los experimentos de búsqueda y la caracterización geométrica de los segmentos ganadores se reportan en el Capítulo~\ref{chap:resultados}.
+
+\subsection{Modelo predictivo de conversión}
+\label{sec:met-modelo-predictivo}
+El desarrollo del modelo predictivo se organizó en rondas sucesivas de experimentación, en las que se variaron los conjuntos de variables, los algoritmos de clasificación, las estrategias de tratamiento del desbalance, los universos de modelado y, posteriormente, los hiperparámetros y procedimientos de selección de variables. La exploración más amplia comparó seis conjuntos de predictores con nueve algoritmos; las estrategias adicionales de balanceo se evaluaron sobre un subconjunto de las combinaciones con mayor interés, en lugar de aplicar todas las alternativas a cada configuración posible.
+
+Para asegurar la robustez del ordenamiento y evitar el sobreajuste, cada configuración se evaluó mediante validación cruzada estratificada de cinco pliegues con estimación de predicciones fuera de la partición de entrenamiento o \emph{out-of-fold}. El ajuste del modelo seleccionado se optimizó mediante búsqueda aleatorizada de hiperparámetros. 
+
+La selección del conjunto de variables predictoras se guió por el análisis de ablación por familias de variables y por los procedimientos de eliminación hacia atrás sobre la métrica PR-AUC descritos antes, con el criterio explícito de descartar las variables que inducen al algoritmo a memorizar la tasa de éxito histórica o los atributos físicos de proyectos específicos —lo que provocaría un colapso del rendimiento al evaluar un desarrollo nuevo— y de conservar las características de comportamiento del prospecto.
+
+Como comprobación complementaria de estabilidad geográfica se realizó una validación cruzada por exclusión de proyectos (\emph{Leave-One-Project-Out Cross-Validation} o LOGO-CV), que entrena el modelo con $N-1$ proyectos y lo evalúa sobre el proyecto restante, repitiendo el ciclo hasta que cada desarrollo actúa como conjunto de prueba. 
+
+\subsection{Decisiones metodológicas críticas}
+\paragraph{Prevención de fuga de información:} Se aplicó un criterio estricto para excluir de la lista de variables predictoras todo campo del CRM que registre transacciones, estados o interacciones posteriores al evento de reserva (tales como la asignación física de parqueos, bodegas, apartamentos o encuestas de satisfacción postventa). 
+
+\paragraph{Diseño orientado a la portabilidad del modelo:} Para favorecer la aplicabilidad de los modelos en desarrollos inmobiliarios futuros de la empresa, se excluyó deliberadamente la identidad del proyecto residencial de la lista de características predictoras. De incluirse, el modelo tendería a memorizar el éxito de los proyectos existentes en lugar de aprovechar los atributos de comportamiento del lead.
+
+\section{Estrategia de evaluación técnica y operacional}
+Para validar la utilidad del sistema de priorización, el rendimiento de las configuraciones predictivas se analizó bajo dos planos de decisión complementarios: el analítico (técnico) y el operativo (comercial).
+
+\subsection{Evaluación técnica analítica}
+Este plano se enfoca en medir la capacidad intrínseca del modelo para ordenar y clasificar la cartera de clientes utilizando predicciones fuera de muestra (\emph{out-of-fold}). Debido al desbalance severo de clases registrado en el negocio, se seleccionaron métricas robustas que evitan estimaciones sesgadas:
+\begin{itemize}
+    \item \textbf{Métrica principal (PR-AUC):} El área bajo la curva precisión--\emph{recall} se adoptó como criterio principal de evaluación. Esta métrica resume la relación entre la proporción de conversiones identificadas y la precisión obtenida al priorizarlas, por lo que resulta especialmente informativa cuando la clase de interés representa una proporción reducida del conjunto de datos.    \item \textbf{Calibración probabilística (Brier score):} Se utilizó para medir la confiabilidad de las probabilidades estimadas. El Brier score evalúa la desviación cuadrática media entre la probabilidad predicha por la regresión logística y el desenlace real de conversión.
+    \item \textbf{Métricas de acuerdo complementarias:} Se reportan el área bajo la curva ROC (ROC-AUC), el coeficiente de correlación de Matthews (MCC) y el estadístico $\kappa$ de Cohen. Estos dos últimos coeficientes evalúan la matriz de confusión completa actuando como correctores por azar, lo cual penaliza severamente a los modelos triviales que se ven favorecidos por el desbalance extremo de los datos.
+\end{itemize}
+
+\subsection{Evaluación operativa mediante simulación de Monte Carlo}
+La evaluación operativa traduce el rendimiento estadístico del modelo en valor práctico para el negocio. Simula escenarios reales donde la fuerza de ventas posee restricciones de capacidad de contacto y evalúa cuántas ventas se capturan al priorizar con el modelo frente a atender la cartera en orden arbitrario (enfoque al azar). Para garantizar la robustez metodológica, esta comparación se contrastó mediante tres vías analíticas independientes:
+\begin{enumerate}
+    \item \textbf{Simulación a escala operativa (1{,}000 iteraciones):} Diseñada para modelar el rendimiento promedio esperado de un equipo comercial que selecciona leads al azar bajo diferentes escenarios de capacidad comercial (cortes del Top 5\%, 10\%, 20\% y 30\%). Esta simulación empírica permite definir los intervalos de confianza del 95\% del azar para identificar mejoras comercialmente significativas.
+    \item \textbf{Simulación de alta resolución (200{,}000 iteraciones):} Estructurada específicamente para auditar la estabilidad estadística del proceso, asegurando que las estimaciones en los percentiles extremos (las colas de la distribución aleatoria) permanezcan estables y libres del ruido de muestreo. Aplicada a los ocho niveles de capacidad analizados, esta vía acumula cerca de 1{,}6 millones de extracciones aleatorias.
+    \item \textbf{Distribución analítica exacta:} Modelada formalmente bajo la teoría de muestreo sobre poblaciones finitas para calcular de forma directa la probabilidad teórica del azar, eliminando cualquier error de muestreo o sesgo de simulación numérica. Dado que el proceso de prospección aleatoria equivale a extraer de forma consecutiva y sin reemplazo registros dentro de una cartera cerrada, la distribución del conteo de conversiones obtenidas se rige con absoluta precisión matemática por una distribución hipergeométrica $H(N, K, n)$, cuya función de probabilidad para registrar exactamente $x$ éxitos se define como:
+    \begin{equation}
+    P(X = x) = \frac{\binom{K}{x}\binom{N-K}{n-x}}{\binom{N}{n}}
+    \end{equation}
+    donde los parámetros poblacionales fijos corresponden a las dimensiones del universo de modelado definido ($N$ representa el total de registros de clientes calificados que componen dicho universo, y $K$ denota la cantidad de éxitos o reservas físicas reales registradas históricamente en él), mientras que $n$ representa la capacidad de contacto o tamaño de muestra evaluada bajo el escenario operativo correspondiente.
+
+    Metodológicamente, para evaluar la significancia de la señal predictiva del modelo, este estándar calcula la función de supervivencia o probabilidad acumulada de la cola superior. Esta métrica determina la probabilidad analítica exacta de que la selección aleatoria iguale o supere el número de éxitos $m$ obtenidos por la priorización inteligente del modelo final:
+    \begin{equation}
+    P(X \ge m) = \sum_{x=m}^{\min(n, K)} \frac{\binom{K}{x}\binom{N-K}{n-x}}{\binom{N}{n}}
+    \end{equation}
+    Al resolver analíticamente esta sumatoria, el procedimiento calcula el valor de probabilidad ($p$-value) y la distancia en desviaciones estándar ($z$-score) del desempeño del modelo respecto a la media teórica esperada por el azar.
+
+\end{enumerate}
+La comparación sistemática de estas tres vías metodológicas garantiza que la ventaja del modelo sobre el azar no sea producto del ruido de simulación, sentando las bases estadísticas para los resultados que se reportan detalladamente en el Capítulo~\ref{chap:resultados}.
+
+\section{Implementación y transferencia de conocimiento}
+La fase final de la metodología se diseñó como un proceso sistemático de transferencia de conocimiento, orientado a garantizar que la organización pueda adoptar, operar e integrar las soluciones analíticas de forma sostenible dentro de sus sistemas comerciales y flujos de trabajo actuales. El despliegue de los modelos predictivos y de segmentación se estructuró bajo dos frentes complementarios: el cumplimiento de tres restricciones técnicas fundamentales en el diseño del software y el desarrollo de un marco documental compuesto por cuatro guías técnicas y operativas.
+
+\subsection{Restricciones estructurales del diseño técnico}
+Para asegurar la estabilidad de la infraestructura informática existente y minimizar la resistencia al cambio por parte de los administradores de sistemas, el desarrollo del componente de cálculo (\texttt{scoring\_leads}) se rigió por tres criterios de ingeniería:
+\begin{enumerate}
+    \item \textbf{No intrusión:} El componente opera bajo un esquema pasivo de "solo lectura" sobre el conjunto de datos de entrada. Lee la tabla que el entorno de visualización comercial (Power BI) le entrega en memoria y devuelve la misma estructura con idéntico orden, anexando únicamente las columnas de prioridad y perfilamiento. Esto evita la necesidad de realizar escrituras directas, reestructuraciones de bases de datos o modificaciones intrusivas en el sistema de gestión de relaciones con clientes (CRM) de la empresa.
+    \item \textbf{Consistencia de la calificación:} Los modelos se cargan ya entrenados y serializados, por lo que un lead con los mismos atributos recibe la misma puntuación predictiva y, cuando dispone de la información requerida, la misma asignación de grupo. El percentil se calcula posteriormente a partir de la posición relativa de esa puntuación dentro de la cartera procesada; por esta razón, puede variar cuando cambia la composición del conjunto de leads, aun cuando la puntuación individual permanezca constante.
+    \item \textbf{Legibilidad operativa para el usuario final:} Para facilitar la interpretación del ordenamiento, la puntuación predictiva se expresa adicionalmente como un percentil relativo dentro de la cartera procesada. Esta representación permite identificar con mayor claridad la posición de cada lead respecto del resto de los prospectos. El componente devuelve además la asignación de grupo y utiliza el valor de control $-1$ cuando no existe información suficiente para realizar la segmentación.
+\end{enumerate}
+
+\subsection{Marco documental para la transferencia operativa}
+\label{sec:transferencia-operativa}
+Con el propósito de mitigar la brecha de adopción técnica entre los desarrolladores y las áreas usuarias, se diseñó una biblioteca documental compuesta por cuatro guías y manuales de operación procedimentales, detallados en el Anexo~\ref{anx:guias-tecnicas}:
+\begin{enumerate}
+    \item \textbf{Guía de implementación técnica del tablero (Paso 1)} (Anexo~\ref{anx:guia-powerbi-paso1})\textbf{:} Escrita específicamente para los analistas de inteligencia de negocios o administradores de base de datos encargados de conectar el informe al CRM de la empresa y programar su actualización automática. Este documento detalla la migración de la consulta de datos desde el entorno de pruebas local hacia el entorno productivo, describe la validación de compatibilidad de los nombres canónicos de variables del lead, y define las tres alternativas de configuración de la puerta de enlace en la nube para el refresco automatizado.
+    \item \textbf{Guía técnica de scoring y configuración del entorno (Paso 2)} (Anexo~\ref{anx:guia-scoring-paso2})\textbf{:} Dirigida al administrador de sistemas responsable de la infraestructura de soporte de TI. Este manual establece el procedimiento paso a paso para la instalación del entorno de ejecución de Python, la configuración de dependencias de software con versiones estrictas para evitar incompatibilidades silenciosas (particularmente con la biblioteca de aprendizaje automático utilizada para la serialización de modelos) y el procedimiento técnico para integrar el script de orquestación en la interfaz de consultas de Power Query.
+    \item \textbf{Manual de uso para el equipo comercial (Guía del dashboard)} (Anexo~\ref{anx:guia-dashboard-comercial})\textbf{:} Diseñado como un recurso de formación operativa para asesores comerciales, analistas de mercadeo y gerencia de ventas. El documento guía de forma cualitativa al usuario a través del tablero visual para la comprensión general del flujo de conversión y el comportamiento de las campañas comerciales. Adicionalmente, proporciona pautas procedimentales para la priorización diaria de carteras utilizando la métrica de percentil como indicador relativo de orden de contacto e instruye en la interpretación de los clústeres para adaptar el discurso de ventas según las características demográficas de cada segmento.
+    \item \textbf{Manual de auditoría y documentación de componentes (\emph{Componentes y Código})} (Anexo~\ref{anx:manual-componentes-codigo})\textbf{:} Diseñado como un manual técnico avanzado y apéndice de auditoría para ingenieros de software o científicos de datos responsables del mantenimiento a largo plazo. El documento detalla la arquitectura modular del paquete \texttt{scoring\_leads}, describiendo las entradas, lógica interna y salidas de sus siete módulos específicos de Python y sus tres archivos de modelo congelados. Asimismo, detalla el funcionamiento de la batería de doce pruebas unitarias automatizadas que validan la robustez matemática del paquete (contrato de datos) frente a datos nulos, ruidosos o atípicos antes de compilar o actualizar el sistema.
+\end{enumerate}
+
+% ================================================================================
+% CAPÍTULO: RESULTADOS Y DISCUSIÓN
+% Versión auditada y reescrita.
+%
+% Convenciones aplicadas en esta versión:
+%   · Separador decimal: punto. Separador de millares: {,}
+%   · Porcentajes siempre escapados como \%
+%   · Etiquetas \label preexistentes conservadas sin cambios
+%   · Los comentarios que inician con «% [VERIFICAR]» marcan cifras que no
+%     pudieron confirmarse de forma concluyente contra los archivos del proyecto.
+%     Véase el Informe de Auditoría para el detalle.
+% ================================================================================
+
+% ================================================================================
+% CAPÍTULO: RESULTADOS Y DISCUSIÓN
+% Versión auditada y reescrita.
+%
+% Convenciones aplicadas en esta versión:
+%   · Separador decimal: punto. Separador de millares: {,}
+%   · Porcentajes siempre escapados como \%
+%   · Etiquetas \label preexistentes conservadas sin cambios
+%   · Los comentarios que inician con «% [VERIFICAR]» marcan cifras que no
+%     pudieron confirmarse de forma concluyente contra los archivos del proyecto.
+%     Véase el Informe de Auditoría para el detalle.
+% ================================================================================
+
+\chapter{Resultados y Discusión}
+\label{chap:resultados}
+
+% ================================================================================
+\section{Proceso comercial y gestión de leads}
+\label{sec:entendimiento-negocio}
+% ================================================================================
+
+
+El proceso de administración de leads de la empresa inmobiliaria se formalizó mediante un modelo en la notación estándar de modelado de procesos de negocio (\textit{BPMN}). Este modelo se estructuró dentro de una única entidad organizacional (\textit{Empresa Inmobiliaria}) y se delimitó en tres carriles de responsabilidad: el asistente comercial, el sistema CRM y el asesor comercial.
+
+El flujo comienza con la recepción del lead en el sistema y se desarrolló a través de un macroflujo unificado (Figura~\ref{fig:macroflow-compacted}) que integró actividades globales de la organización, compuertas de decisión intermedias, envíos automáticos de mensajería y tres subprocesos modulares específicos (Figura~\ref{fig:bpmn-validar}, Figura~\ref{fig:bpmn-contacto} y Figura~\ref{fig:bpmn-visita}):
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{figuras/MacroFlowCompacted.png}
+\caption{Macroflujo unificado del proceso comercial}
+\label{fig:macroflow-compacted}
+\fuentepropia
+\end{figure}
+
+\begin{sloppypar}
+\begin{enumerate}
+    \item \textbf{Ingreso y recepción del lead:} El flujo inicia formalmente con la llegada del prospecto. Si el contacto provino de una campaña digital, el CRM registra los datos automáticamente. En caso contrario, el asistente comercial ejecuta el ingreso manual de la información en la plataforma.
+    
+    \item \textbf{Subproceso de validación y asignación del lead:} Tras el registro del prospecto, se da inicio al primer subproceso modular, en el cual se valida la duplicidad de la información de contacto. Si se identifica un registro duplicado, el sistema elimina el registro para proteger la integridad de la base de datos; si el contacto era único, se asigna formalmente a un asesor comercial (ver Figura~\ref{fig:bpmn-validar}).
+    
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figuras/bpmn_validar.png}
+    \caption{Subproceso: validar y asignar lead}
+    \label{fig:bpmn-validar}
+    \fuentepropia
+    \end{figure}
+
+    \item \textbf{Acciones de envío automatizado (Etapa intermedia):} Al concluir la asignación, se realiza el envío de información general por correo electrónico y por medio de la plataforma de WhatsApp.
+    
+    \item \textbf{Subproceso de ejecución del proceso de contacto:} Inmediatamente después de los envíos, se activa el segundo subproceso modular. El asesor comercial lleva a cabo una secuencia estructurada de contacto, consistiendo en una llamada de perfilamiento inicial y hasta tres intentos adicionales de llamada en caso de no obtener respuesta. Los ciclos posteriores de contacto incluyen mensajes de seguimiento por WhatsApp y se realizan con intervalos de 24 a 48 horas. Si el lead responde, se marca el fin del subproceso con éxito; si se agotan todos los intentos de comunicación sin recibir respuesta, el lead se registra como perdido en el sistema (ver Figura~\ref{fig:bpmn-contacto}).
+    
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.78\textwidth]{figuras/bpmn_contacto.png}
+    \caption{Subproceso: ejecutar proceso de contacto}
+    \label{fig:bpmn-contacto}
+    \fuentepropia
+    \end{figure}
+
+    \item \textbf{Perfilamiento y calificación de interés (Etapa intermedia):} 
+Una vez concluido el proceso de contacto, el macroflujo evalúa el resultado de la comunicación. Si no es posible contactar al lead, se registra el motivo de pérdida correspondiente. Si se establece el contacto, el asesor procede a perfilar al cliente potencial, el CRM cambia el estado a ``Interesado'' y se determina si el prospecto califica para el proyecto de acuerdo con su perfil y capacidad de compra. Si califica, el asesor le propone una visita al proyecto residencial. En caso de no calificar, el lead se registra como perdido bajo el motivo de pérdida correspondiente. Si califica, pero no acepta la visita, el flujo también se desvía hacia el registro de pérdida.
+
+\item \textbf{Subproceso de gestión de la visita al proyecto:} 
+Si el prospecto acepta la propuesta, se inicia el tercer subproceso modular. El asesor agenda la cita en el sistema y el CRM cambia el estado de la oportunidad a ``Visita Programada''. Al llegar el día agendado, si el cliente asiste, el asesor comercial lo atiende en el desarrollo habitacional y el proceso continúa hacia las etapas posteriores del flujo comercial (ver Figura~\ref{fig:bpmn-visita}).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{figuras/bpmn_visita.png}
+\caption{Subproceso: gestionar visita al proyecto}
+\label{fig:bpmn-visita}
+\fuentepropia
+\end{figure}
+
+\item \textbf{Fase final de cierre y reserva (Etapa intermedia):} 
+Una vez realizada la visita, el flujo continúa a través de las etapas posteriores del proceso comercial:
+\begin{itemize}
+    \item El estado cambia a ``Visita Modelo'' en el CRM y se brinda seguimiento posterior a la visita.
+    \item Conforme la oportunidad avanza hacia el cierre, el estado cambia a ``Corto Plazo''.
+    \item Al concretarse la reserva de la vivienda, el estado cambia a ``Reserva'' en el CRM, se inicia el proceso de reserva y el trato se transfiere al área de formalización comercial.
+\end{itemize}
+\end{enumerate}
+
+El diagrama expandido completo integra las interacciones entre los distintos carriles de responsabilidad y se presenta a página completa en el Anexo~\ref{anx:bpmn} por razones de legibilidad.
+\end{sloppypar}
+
+\subsection{Identificación de puntos críticos y hallazgos del proceso}
+\label{subsec:puntos-criticos-hallazgos}
+
+A partir del análisis del modelo BPMN se identificaron puntos críticos y hallazgos relevantes para caracterizar la estructura del proceso, las dinámicas que determinan el avance de los prospectos y la generación progresiva de información dentro del embudo comercial.
+
+\begin{enumerate}
+
+    \item \textbf{Progresión del lead a través de etapas comerciales definidas:}
+    El proceso presenta una estructura secuencial en la que el lead transita por estados
+    que representan distintos niveles de avance comercial, entre ellos ``Contactado'',
+    ``Interesado'', ``Visita Programada'', ``Visita Modelo'', ``Corto Plazo'' y
+    ``Reserva''. Esta estructura evidencia que la conversión no ocurre como un evento
+    aislado, sino como el resultado de una progresión dentro del embudo, en la que el
+    prospecto atraviesa diferentes instancias de contacto, evaluación y seguimiento
+    antes de concretar la oportunidad comercial. La existencia de estos estados permite,
+    además, distinguir operacionalmente el grado de avance alcanzado por cada lead.
+
+    \item \textbf{Interacción entre el sistema CRM y la intervención humana:}
+    La administración del lead distribuye actividades entre el sistema CRM y el equipo
+    comercial. El CRM funciona como soporte para el registro y gestión de la información
+    del prospecto y de su avance dentro del embudo, mientras que las principales
+    interacciones comerciales requieren intervención humana. En particular, el asesor
+    comercial realiza las llamadas de contacto, el perfilamiento y la calificación del
+    prospecto, el seguimiento, la gestión de visitas y las actividades orientadas al cierre.
+    Por su parte, el asistente comercial interviene en el ingreso, validación y asignación
+    de los leads cuando corresponde. Esta distribución de responsabilidades evidencia que
+    la administración de leads se desarrolla mediante la interacción entre el soporte
+    tecnológico del CRM y la gestión directa del equipo comercial.
+
+    \item \textbf{Disponibilidad progresiva de información a lo largo del embudo:}
+    La información disponible sobre un lead no permanece constante durante el proceso,
+    sino que aumenta conforme se producen nuevas interacciones comerciales. En las
+    primeras etapas se dispone principalmente de la información obtenida durante su
+    captación. Una vez establecido el contacto, el perfilamiento incorpora datos
+    adicionales sobre las características, intereses y capacidad de compra del
+    prospecto. Conforme la oportunidad continúa avanzando, se generan nuevos registros
+    asociados con su gestión comercial y, posteriormente, con la transacción y el
+    proceso de formalización. En consecuencia, los campos almacenados en el CRM
+    representan información generada en distintos momentos del recorrido comercial y
+    no un conjunto de datos disponible de manera simultánea desde el ingreso del lead.
+
+    \item \textbf{La reserva como punto de concreción de la oportunidad comercial:}
+    Dentro de la secuencia identificada, la etapa de ``Reserva'' constituye una frontera
+    operacional entre la administración de la oportunidad comercial y el proceso
+    posterior de formalización. Alcanzar esta etapa implica que el prospecto avanzó a
+    través del embudo hasta concretar la reserva de una vivienda, después de lo cual el
+    trato continúa hacia actividades propias de formalización. Por tanto, la reserva
+    proporciona un punto observable dentro del proceso para delimitar la conversión de
+    un lead, en correspondencia con la operación comercial de la empresa.
+
+\end{enumerate}
+
+
+\subsection{Embudo comercial}
+\label{subsec:embudo-cuantificado}
+
+La Figura~\ref{fig:embudo-funnel} muestra el volumen alcanzado en cada etapa y la tasa de progresión respecto de la etapa anterior.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{figuras/pbi_embudo_funnel.png}
+\caption{Volumen de leads y tasa de progresión por etapa del embudo comercial}
+\label{fig:embudo-funnel}
+\fuentepropia
+\end{figure}
+
+De los 437.6 miles de leads ingresados, 272.2 miles alcanzaron el estado ``Contactado'' ($62\%$). Solo 49.9 miles llegaron a ``Interesado'', lo que corresponde a una progresión del $18\%$ entre ambas etapas y constituye la mayor contracción relativa del embudo. Después de ese punto, el $85\%$ de quienes programaron una visita llegó a la visita al modelo y el $93\%$ de quienes alcanzaron ``Corto Plazo'' llegó a ``Reserva''. Entre ``Visita Modelo'' y ``Corto Plazo'' la progresión fue del $30\%$.
+
+
+\subsection{Razones de pérdida registradas}
+\label{subsubsec:razones-perdida}
+
+El CRM contenía un motivo de pérdida para 423{,}656 leads. Las quince categorías de mayor volumen se presentan en el Cuadro~\ref{tab:razones-perdida}.
+
+\begin{table}[H]
+\centering
+\caption{Principales motivos de pérdida de leads por volumen absoluto}
+\label{tab:razones-perdida}
+\small
+\begin{tabular}{p{8.5cm}r}
+\hline
+\textbf{Razón de pérdida} & \textbf{Leads} \\ \hline
+Varias llamadas y/o WhatsApp sin respuesta o sin avance & 53{,}917 \\
+No le interesa y no dio una razón al respecto & 48{,}945 \\
+No califica por ingresos & 48{,}872 \\
+Varias llamadas y/o WhatsApp sin respuesta & 45{,}393 \\
+Seguimiento constante sin ninguna señal de progreso & 36{,}214 \\
+Información incorrecta del contacto & 32{,}655 \\
+Cliente informa que verá la información y que se comunicará si tiene interés & 27{,}642 \\
+Relación precio/cuota no le favorece & 21{,}638 \\
+No solicitó información & 20{,}132 \\
+Quería información por curiosidad & 19{,}273 \\
+Características y/o ubicación del proyecto & 12{,}647 \\
+Decidió invertir en otro proyecto & 9{,}255 \\
+Busca renta de una propiedad & 7{,}479 \\
+Postergó su decisión entre 3 y 6 meses & 7{,}348 \\
+No se tiene número telefónico ni señal de interés & 5{,}394 \\ \hline
+Otras razones (categorías con menos de 4{,}800 casos cada una) & 26{,}852 \\ \hline
+\textbf{Total con motivo de pérdida registrado} & \textbf{423{,}656} \\ \hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+Cinco categorías asociadas con imposibilidad de contacto o falta de avance en la comunicación sumaron 173{,}573 casos, equivalentes al $41.0\%$ de los descartes con motivo registrado. Este grupo incluye llamadas o mensajes sin respuesta o sin avance (53{,}917), llamadas o mensajes sin respuesta (45{,}393), seguimiento sin señal de progreso (36{,}214), información incorrecta de contacto (32{,}655) y ausencia de número telefónico o de señal de interés (5{,}394). En comparación, la falta de capacidad financiera y una relación precio--cuota desfavorable acumularon 70{,}510 casos, el $16.6\%$.
+
+La segunda categoría individual de mayor volumen fue ``No le interesa y no dio una razón al respecto'', con 48{,}945 registros. Estos casos confirman que la interrupción del proceso no responde a un único mecanismo: algunos leads no pudieron ser contactados, otros no calificaron y en un grupo numeroso hubo comunicación, pero el motivo de desinterés no quedó especificado. 
+
+La diversidad de motivos sugiere que la pérdida de un lead difícilmente puede explicarse a partir de una sola característica observable. En este contexto, la priorización puede beneficiarse de un enfoque que considere conjuntamente las distintas características disponibles del prospecto y de su origen para estimar su propensión a convertirse.
+
+
+\subsection{Disponibilidad de información}
+
+La información registrada en el CRM se incorpora progresivamente conforme el lead avanza en el proceso comercial. Los datos asociados con su origen, como el canal y la campaña de captación, están disponibles desde su ingreso. En cambio, variables de perfil como razón de compra, ingresos, composición familiar u opciones visitadas dependen de la información obtenida durante la interacción con el prospecto. Finalmente, los datos vinculados con la transacción y la unidad seleccionada aparecen en etapas posteriores del proceso.
+
+Esta disponibilidad progresiva muestra que el perfil registrado de un lead no es estático, sino que se completa durante la gestión comercial. En consecuencia, la cantidad y el tipo de información disponible también reflejan, en cierta medida, el nivel de interacción alcanzado con el prospecto. Este comportamiento adquiere relevancia posteriormente en el modelado, donde la ausencia de algunas variables presentó capacidad predictiva.
+
+% ================================================================================
+\section{Estructuración del conjunto de datos}
+\label{sec:entendimiento-datos}
+% ================================================================================
+
+\subsection{Consolidación del historial}
+\label{sec:res-prep}
+
+Los tres cortes de datos recibidos ($C_1$, $C_2$ y $C_3$) presentaron algunas inconsistencias en las fechas; tras la homologación, su consolidación permitió reunir 442{,}436 observaciones antes del control global de duplicados. Como muestra el Cuadro~\ref{cuad:trazabilidad-prep}, únicamente 4{,}788 registros fueron excluidos posteriormente, equivalentes al $1.08\%$ del total integrado.
+
+
+\begin{table}[H]
+\centering
+\caption{Trazabilidad de registros durante la consolidación y depuración de los datos}
+\label{cuad:trazabilidad-prep}
+\small
+\begin{tabular}{lrr}
+\hline
+\textbf{Etapa} & \textbf{Registros} & \textbf{Variación} \\
+\hline
+Registros procedentes de las fuentes integradas & 442{,}436 & -- \\
+Después de resolver identificadores repetidos & 441{,}908 & $-528$ \\
+Después de excluir desenlaces no determinables & 437{,}767 & $-4{,}141$ \\
+Después de validar el intervalo de edad & 437{,}648 & $-119$ \\
+\hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+La mayor exclusión correspondió a 4{,}141 registros cuyo desenlace no podía determinarse de manera consistente porque la etapa y el estado de cierre proporcionaban lecturas incompatibles. Asignar esos casos a una de las dos clases habría incorporado una definición incierta de la variable objetivo. La tasa de conversión que se utiliza en los análisis posteriores corresponde, por tanto, a los registros con desenlace verificable.
+
+Después de la depuración quedaron 437{,}648 registros y 5{,}144 reservas, una tasa de conversión del $1.18\%$. Esta frecuencia hace inadecuada la exactitud como criterio principal de evaluación: clasificar todos los casos como no conversión produciría un $98.8\%$ de aciertos sin identificar una sola reserva.
+
+Los seis proyectos permanecieron representados en el conjunto de datos, aunque con diferencias amplias en el número de registros (Cuadro~\ref{cuad:proyectos}). proyecto04 y proyecto02 concentraron la mayor parte de las observaciones, mientras que proyecto05 y proyecto06 tuvieron una representación considerablemente menor.
+
+\begin{table}[H]
+\centering
+\caption{Distribución de registros por proyecto residencial después de la depuración}
+\label{cuad:proyectos}
+\begin{tabular}{lr}
+\hline
+\textbf{Proyecto} & \textbf{Registros} \\
+\hline
+proyecto04          & 177{,}630 \\
+proyecto02  & 124{,}683 \\
+proyecto01           &  71{,}247 \\
+proyecto03            &  41{,}452 \\
+proyecto06 &  16{,}680 \\
+proyecto05          &   5{,}956 \\
+\hline
+\textbf{Total}  & \textbf{437{,}648} \\
+\hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+\subsection{Disponibilidad de variables para el modelado}
+\label{subsec:diagnostico-datos}
+
+De las 100 columnas originales, 54 se excluyeron del conjunto destinado al entrenamiento. El Cuadro~\ref{tab:columnas-diagnosticadas} resume los motivos.
+
+\begin{table}[H]
+\centering
+\caption{Diagnóstico de las columnas del CRM según su viabilidad para el modelado}
+\label{tab:columnas-diagnosticadas}
+\begin{tabular}{p{10.5cm}p{2.5cm}}
+\hline
+\textbf{Situación diagnosticada} & \textbf{Columnas} \\ \hline
+Ausencia extrema de información o indisponibilidad en etapas tempranas & 34 \\
+Fuga potencial de información posterior al desenlace (\textit{data leakage}) & 13 \\
+Alta omisión y contenido financiero parcialmente redundante & 4 \\
+Redundancia estructural o ausencia de variabilidad & 2 \\
+Sustitución del rango categórico de edad por la edad continua & 1 \\ \hline
+\textbf{Columnas excluidas} & \textbf{54} \\
+Columnas conservadas para las etapas posteriores del procesamiento & 46 \\ \hline
+\textbf{Total de columnas auditadas} & \textbf{100} \\ \hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+Treinta y cuatro columnas presentaban ausencia extrema o no existían en las etapas tempranas del proceso. Entre ellas se encontraban variables financieras como monto de préstamo, precio de venta, valor del bien y enganche pactado, con más del $99\%$ de valores faltantes. El mapeo del proceso mostró que estos campos se completan en fases posteriores a la reserva. Aunque su contenido podría estar relacionado con la compra, no estaban disponibles en el momento en que debe ocurrir la priorización y, por esa razón, no podían utilizarse como predictores tempranos.
+
+Otras 13 columnas registraban información posterior al desenlace, entre ellas la etapa alcanzada, razones de pérdida, fechas de cierre, asignaciones de apartamento, parqueo y bodega, minutas y encuestas de satisfacción. Parte de estos campos fue necesaria para reconstruir la variable objetivo, pero mantenerlos en el entrenamiento habría permitido que el modelo utilizara consecuencias de la conversión para predecirla. Se conservaron para auditoría y trazabilidad, separados de las entradas del modelo.
+
+Los campos de disponibilidad, rango de disponibilidad, moneda de disponibilidad y cuota deseada presentaban entre $90.95\%$ y $95.72\%$ de valores faltantes y aportaban información financiera parcialmente cubierta por el ingreso familiar, que tenía mayor disponibilidad. Asimismo, se conservó la edad continua en lugar del rango categórico: la primera estaba disponible en el $10.3\%$ de la base y el segundo en el $7.6\%$, y la medida continua permitía construir agrupaciones posteriores sin perder granularidad.
+
+La base depurada se amplió con 14 variables derivadas o provenientes de fuentes externas, sin modificar los 437{,}648 registros. Nueve describen características geográficas y comerciales de los proyectos; cuatro descomponen información de campaña y perfil; y una identifica la procedencia de cada fila. Cuando no existía una referencia externa equivalente para un proyecto, el valor se mantuvo como faltante. El diccionario de las 62 variables resultantes se incluye en el Anexo~\ref{anx:diccionario}.
+
+\begin{table}[H]
+\centering
+\caption{Clasificación del catálogo de 62 variables según su rol en el modelado}
+\label{tab:resumen-variables}
+\small
+\begin{tabular}{p{2.6cm}p{4.1cm}p{5.4cm}p{1.7cm}}
+\hline
+\textbf{Rol} & \textbf{Grupo de información} & \textbf{Estado de modelado} & \textbf{Variables} \\ \hline
+Variable objetivo & Variable objetivo & Variable de salida (conversión) & 1 \\
+Identificador & Identificadores & Excluido (identificadores técnicos) & 3 \\
+Control & Control e indicadores & Excluido (trazabilidad administrativa) & 3 \\
+Atributo de proyecto & Enriquecimiento de proyecto & Candidato (geografía y mercado) & 9 \\
+Atributo de proyecto & Proyecto & Candidato (identidad del proyecto) & 1 \\
+Atributo del lead & Perfil del lead & Candidato (demografía declarada) & 10 \\
+Atributo del lead & Captación y canal & Candidato (origen del lead) & 4 \\
+Atributo del lead & Comportamiento e interés & Candidato (interacción inicial) & 2 \\
+Atributo del lead & Temporal & Candidato (fecha de creación del trato) & 1 \\
+Variable derivada & Derivadas de campaña & Candidato (marketing digital) & 3 \\
+Variable derivada & Derivadas de perfil & Candidato (rango de edad) & 1 \\
+Postventa & Datos de postventa y trato & Excluido (fuga y omisión extrema) & 24 \\ \hline
+\textbf{Total} & & & \textbf{62} \\ \hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+El Cuadro~\ref{tab:resumen-variables} resume la composición del catálogo final: 31 predictores candidatos de disponibilidad temprana, 30 variables excluidas del entrenamiento por identificación, control o generación tardía, y una variable objetivo. Esta separación distingue la información útil para describir retrospectivamente el proceso de aquella que puede utilizarse para estimar conversión antes del desenlace.
+
+Las variables de captación presentaron niveles muy distintos de dispersión entre categorías. \path{canal_de_anuencia} reunió 31 valores distintos, 32 al considerar la ausencia como una categoría, y 1{,}594 registros sin información. En cambio, \texttt{campania} presentó 421 denominaciones distintas, 422 al incluir la ausencia, además de 98{,}756 valores faltantes. Esto muestra que el nombre completo de la campaña estaba mucho más fragmentado que la información general sobre el canal de procedencia.
+
+
+\subsection{Completitud de la información}
+\label{subsec:ausencia-cardinalidad}
+
+Las variables de perfil no estaban completas de manera uniforme. El Cuadro~\ref{cuad:embudo} muestra el efecto de exigirlas de forma acumulada sobre los 437{,}648 registros de la base consolidada completa. 
+
+\begin{table}[H]
+\centering
+\caption{Embudo de completitud acumulada sobre la base consolidada completa}
+\label{cuad:embudo}
+\small
+\begin{tabular}{p{1.0cm}p{3.3cm}p{1.8cm}p{1.8cm}p{2.2cm}}
+\hline
+\textbf{Paso} & \textbf{Variable exigida (acumulada)} & \textbf{Ausencia propia} & \textbf{N acumulado} & \textbf{Conversiones} \\ \hline
+1 & \texttt{fuente\_pt2} & $0.0\%$ & 437{,}648 & 5{,}144 \\
+2 & \path{canal_de_anuencia} & $0.4\%$ & 436{,}054 & 3{,}753 \\
+3 & \texttt{canal\_de\_contacto} & $0.2\%$ & 435{,}141 & 3{,}753 \\
+4 & \texttt{sexo} & $56.4\%$ & 189{,}664 & 3{,}547 \\
+5 & \texttt{ingreso\_familiar} & $67.2\%$ & 62{,}141 & 3{,}230 \\
+6 & \texttt{razon\_de\_compra} & $20.9\%$ & 49{,}161 & 3{,}203 \\
+7 & \texttt{estado\_civil} & $17.3\%$ & 40{,}680 & 3{,}164 \\
+8 & \texttt{edad} & $12.2\%$ & 35{,}716 & 3{,}130 \\
+9 & \texttt{nucleo\_familiar} & $26.1\%$ & 26{,}400 & 3{,}031 \\
+10 & \texttt{tiene\_hijos} & $14.8\%$ & 22{,}482 & 2{,}588 \\ \hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+
+El embudo evidencia que la mayor reducción del universo ocurre al incorporar las variables de perfil. Después de exigir los dos campos de canal permanecen 435{,}141 registros; la adición de \texttt{sexo} reduce el conjunto a 189{,}664 y la de \texttt{ingreso\_familiar} lo lleva a 62{,}141. Estos dos pasos concentran la mayor pérdida de observaciones y muestran que la información demográfica y económica se registró con mucha menor frecuencia que los datos básicos de procedencia y contacto.
+
+Al exigir de forma acumulada las diez variables, la base disminuye de 437{,}648 a 22{,}482 registros: se conserva únicamente el $5.14\%$ de las observaciones originales. La reducción de las conversiones es considerablemente menor, pues permanecen 2{,}588 de las 5{,}144 reservas, equivalentes al $50.31\%$. Por ello, la tasa de conversión aumenta del $1.18\%$ en la base consolidada completa al $11.51\%$ en el subconjunto con información completa.
+
+Esta diferencia mostró que exigir información completa no constituía únicamente una reducción del tamaño de la muestra, sino que alteraba la composición del conjunto al retener proporcionalmente más leads convertidos. Por esta razón, se descartó el uso de casos completos como criterio para definir la población de modelado. En su lugar, se conservaron observaciones con datos faltantes en variables de perfil y se evaluó su ausencia como parte de la información disponible para el modelo. Esta decisión permitió ampliar posteriormente el universo de modelado sin restringirlo a los leads con mayor nivel de completitud.
+
+
+\subsection{Universos de modelado}
+\label{subsec:universo-h-resultados}
+
+De los 437{,}648 registros consolidados, 45{,}614 correspondieron a leads que habían alcanzado al menos la etapa ``Interesados''. Dentro de esta población se registraron 870 conversiones, equivalentes a una tasa del $1.91\%$. Este conjunto constituyó la base de leads calificados a partir de la cual se definieron los universos utilizados en el modelado.
+
+Los resultados del análisis de completitud mostraron que exigir información en las diez variables habría reducido esta población a 15{,}200  leads y 672 conversiones (Véase Anexo~\ref{anx:embudo-calificados}). Al aplicar requisitos diferenciados de completitud, el Universo H quedó conformado por 22{,}656 leads y 739 conversiones, con una tasa base del $3.26\%$. En comparación con el criterio de casos completos, esta definición permitió conservar 7{,}456 leads y 67 conversiones adicionales, incrementos del $49.1\%$ y $10.0\%$, respectivamente.
+
+La segmentación requirió un universo distinto debido a las variables utilizadas para conformar los conglomerados. El Universo S reunió 20{,}647 leads y 731 conversiones, con una tasa de conversión del $3.54\%$. El Cuadro~\ref{cuad:universos} resume la composición final de los conjuntos utilizados en ambos análisis.
+
+\begin{table}[H]
+\centering
+\caption{Universos de análisis derivados del extracto consolidado}
+\label{cuad:universos}
+\small
+\begin{tabular}{p{4.6cm}p{4.4cm}rrr}
+\hline
+\textbf{Universo} & \textbf{Criterio de completitud} & \textbf{N} & \textbf{Conv.} & \textbf{Tasa} \\
+\hline
+Base CRM consolidada & -- & 437{,}648 & 5{,}144 & 1,18\,\% \\
+Leads calificados & etapa $\geq$ «Interesados» & 45{,}614 & 870 & 1,91\,\% \\
+Casos completos (referencia) & las 10 variables de perfil & 15{,}200 & 672 & 4,42\,\% \\
+\textbf{Universo H} (predictivo) & \texttt{fuente\_pt2}, dos canales, \texttt{ingreso\_familiar}, \texttt{edad} & 22{,}656 & 739 & 3,26\,\% \\
+\textbf{Universo S} (segmentación) & \texttt{edad}, \texttt{sexo}, \texttt{estado\_civil}, \texttt{razon\_de\_compra}, \texttt{tipo\_unidad} & 20{,}647 & 731 & 3,54\,\% \\
+\hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+
+\subsection{Análisis exploratorio}
+\label{subsec:eda-powerbi}
+
+\subsubsection{Conversión y volumen por canal de anuencia}
+\label{subsubsec:asimetria-canales}
+
+Las mayores tasas de conversión se observaron en canales de acceso restringido o con poblaciones pequeñas: compras corporativas o de socios ($97.92\%$), OpenSale ($92.45\%$), referidos de clientes y colaboradores ($87.96\%$) y eventos de lanzamiento ($53.33\%$), como se muestra en la Figura~\ref{fig:canal-tasa}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.70\textwidth]{figuras/canal_anuencia_tasa.png}
+\caption{Tasa de conversión de leads por canal de anuencia comercial}
+\label{fig:canal-tasa}
+\fuentepropia
+\end{figure}
+
+Estas tasas no coincidieron con los canales que aportaron más conversiones en términos absolutos. Los canales anteriores sumaron alrededor de 200 reservas, mientras que Facebook concentró aproximadamente 1{,}200 reservas, las referencias unas 600 y los canales de referidos directos y sede unas 400 cada uno (Figura~\ref{fig:canal-volumen}).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.70\textwidth]{figuras/canal_anuencia_volumen.png}
+\caption{Volumen absoluto de conversiones por canal de anuencia comercial}
+\label{fig:canal-volumen}
+\fuentepropia
+\end{figure}
+
+Los canales con las tasas de conversión más altas no coincidieron necesariamente con los que generaron la mayor cantidad de reservas. Algunos canales de menor volumen presentaron tasas excepcionalmente elevadas, mientras que canales con tasas más moderadas concentraron un número considerablemente mayor de conversiones debido a la cantidad de leads que aportaron. Este contraste muestra que el desempeño de un canal no puede interpretarse únicamente a partir de su tasa de conversión: el volumen de leads también determina su contribución al resultado comercial.
+
+La coexistencia de canales con perfiles tan distintos también evidencia que la procedencia del lead contiene información relevante sobre su comportamiento dentro del embudo. Más adelante, esta señal volvió a aparecer en el modelo predictivo, donde las variables asociadas con el origen del prospecto se ubicaron entre las de mayor importancia.
+
+\subsubsection{Razón de compra}
+
+Los leads que declararon una motivación de inversión presentaron una tasa de conversión del $10.64\%$, frente al $3.20\%$ de quienes declararon compra para vivienda. La diferencia supera siete puntos porcentuales y fue el contraste más amplio entre los atributos declarados del prospecto analizados de forma bivariada.
+
+Este resultado muestra que la razón de compra permite distinguir perfiles con comportamientos de conversión considerablemente diferentes. En particular, los leads interesados en adquirir una propiedad como inversión presentaron una mayor propensión a alcanzar la reserva que quienes buscaban una vivienda para uso propio.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.72\textwidth]{figuras/razon_compra_conversion.png}
+\caption{Tasa de conversión de leads según la razón de compra declarada}
+\label{fig:razon-compra-conversion}
+\fuentepropia
+\end{figure}
+
+
+\subsubsection{Edad}
+
+La tasa de conversión aumentó con la edad: $3.5\%$ entre los menores de 28 años, $6.0\%$ entre 28 y 34, $8.3\%$ entre 35 y 45, $8.4\%$ entre 46 y 52, $11.3\%$ entre 53 y 60 y $11.7\%$ entre los mayores de 60 (Figura~\ref{fig:edad-conversion}).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{figuras/edad_conversion.png}
+\caption{Volumen de leads y tasa de conversión por rangos de edad}
+\label{fig:edad-conversion}
+\fuentepropia
+\end{figure}
+
+El patrón fue consistente a lo largo de los rangos analizados: los leads de mayor edad presentaron tasas de conversión progresivamente más altas. Sin embargo, el volumen se concentró principalmente entre los 28 y 45 años, mientras que los grupos con las mayores tasas tuvieron una participación menor en la base. La edad mostró, por tanto, diferencias claras en la conversión observada entre los distintos perfiles del prospecto.
+
+\subsubsection{Otras variables demográficas}
+
+La tasa de conversión fue del $2.33\%$ entre hombres y del $1.41\%$ entre mujeres, con una captación cercana a partes iguales. La presencia de hijos separó tasas del $10.4\%$ y del $8.4\%$; el estado civil y el tamaño del núcleo familiar no mostraron patrones definidos una vez consideradas sus categorías. Los resultados completos se incluyen en el Anexo~\ref{anx:eda-complementario}.
+
+
+\subsubsection{Comportamiento temporal}
+\label{subsubsec:tendencia-temporal}
+
+Entre agosto de 2017 y abril de 2026 no se observó un patrón estacional de calendario estable. Los meses de mayor afluencia coincidieron con períodos de superposición de pautas de varios proyectos, mientras que la tasa mensual de conversión permaneció baja y relativamente estable, incluso durante los aumentos de captación. La evidencia gráfica se incluye en el Anexo~\ref{anx:eda-complementario}.
+
+La coincidencia con las pautas no permite atribuir toda la variación del volumen a las campañas ni descartar por completo cambios temporales en la demanda. Sí indica que el historial disponible no contenía una señal de calendario estable que justificara utilizar el mes o la temporada como predictores principales. 
+
+% ================================================================================
+\section{Modelo predictivo y segmentación de leads}
+\label{sec:res-modelado}
+% ================================================================================
+
+\subsection{Modelo predictivo de conversión}
+
+\subsubsection{Selección del Universo}
+
+La regresión logística seleccionada como modelo final presentó un desempeño superior al obtenido en la fase preliminar. El Cuadro~\ref{cuad:comparacion-fases} muestra la comparación entre ambas configuraciones.
+
+\begin{table}[H]
+\centering
+\caption{Comparación entre la configuración previa y el modelo final}
+\label{cuad:comparacion-fases}
+\begin{tabular}{lrr}
+\hline
+\textbf{Indicador} & \textbf{Configuración previa} & \textbf{Modelo final} \\
+\hline
+Universo de entrenamiento                & casos completos & Universo H \\
+\quad (tamaño)                           & 13{,}038 leads$^{\dagger}$ & 22{,}656 leads \\
+PR-AUC                                   & $\approx$0.07  & 0.2215 \\
+Leads requeridos para \emph{recall}$\geq$0.70 & $64.2\%$       & $29.1\%$ \\
+Precisión en ese punto                   & $5.1\%$        & $7.9\%$ \\
+\emph{Lift} en el primer decil           & $\approx$2.6   & 4.15 \\
+\hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+\noindent{\footnotesize $^{\dagger}$ Tamaño sobre el extracto preliminar del proyecto; el análisis de completitud sobre la base consolidada completa se presenta en el Cuadro~\ref{cuad:embudo}.}
+
+\smallskip
+El modelo final alcanzó un PR-AUC de 0.2215, frente a aproximadamente 0.07 en la configuración preliminar. La diferencia también se reflejó en la capacidad de concentrar las conversiones: para alcanzar un \textit{recall} de al menos $70\%$, la proporción de leads que debía priorizarse se redujo de $64.2\%$ a $29.1\%$ del universo correspondiente. Al mismo tiempo, la precisión en ese punto aumentó de $5.1\%$ a $7.9\%$ y el \textit{lift} del primer decil pasó de aproximadamente 2.6 a 4.15.
+
+En términos operativos, el modelo final permitió identificar al menos siete de cada diez conversiones priorizando menos de un tercio de los leads. Este resultado representa una mejora relevante para el objetivo de priorización, ya que concentra una mayor proporción de las conversiones en un grupo considerablemente menor de prospectos. La Sección~\ref{subsec:lectura-comercial} traduce estas métricas a términos de esfuerzo comercial.
+
+El conjunto del trabajo evaluó 489 configuraciones modeladas de predicción. El registro completo, con las variables de cada lote, se presenta en el Anexo~\ref{anx:modelos-evaluados}.
+
+\subsubsection{Selección del algoritmo}
+
+La Figura~\ref{fig:comparacion-algoritmos} muestra que varias familias alcanzaron valores competitivos de PR-AUC, aunque con una variación considerable entre las configuraciones evaluadas dentro de cada una. La regresión logística se ubicó entre los algoritmos con mejor desempeño, mientras que los métodos basados en árboles y el perceptrón multicapa no produjeron una mejora consistente frente a los modelos lineales.
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figuras/mod_algoritmos.png}
+\caption{PR-AUC por familia de algoritmo en la búsqueda exhaustiva del modelo predictivo}
+\label{fig:comparacion-algoritmos}
+\fuentepropia
+\end{figure}
+
+
+La comparación más cercana se produjo entre la regresión logística y el análisis discriminante lineal (LDA). Antes del ajuste de hiperparámetros y sobre el mismo conjunto base de variables, el análisis discriminante alcanzó un PR-AUC de 0.2160, frente a 0.2041 de la regresión logística. Sin embargo, esta diferencia no se reprodujo en las métricas orientadas directamente a la priorización: en el primer decil, la regresión logística alcanzó un \textit{recall} de 0.3677 y un \textit{lift} de 3.68, superiores al 0.3552 y 3.55 obtenidos por el análisis discriminante. Después del ajuste de hiperparámetros, la relación también se invirtió en PR-AUC, con 0.2204 para la regresión logística y 0.2178 para el análisis discriminante.
+
+Estos resultados favorecieron la selección de la regresión logística sin requerir un sacrificio de desempeño predictivo. Además de alcanzar el mayor PR-AUC entre ambas alternativas después del ajuste, presentó mejores resultados de priorización en el primer decil. 
+
+Las estrategias de tratamiento del desbalance tampoco produjeron mejoras consistentes. El sobremuestreo sintético modificó el PR-AUC entre 0.002 y 0.005, con variaciones tanto positivas como negativas según la configuración, mientras que el submuestreo aleatorio lo redujo aproximadamente 0.02. Por esta razón, el modelo final conservó la distribución original de las clases.
+
+\subsubsection{Coeficientes del modelo}
+
+La probabilidad estimada se obtiene mediante la siguiente función:
+
+\begin{equation}
+P(\text{conversión}) = \frac{1}{1 + e^{-z}}, \qquad z = \beta_0 + \sum_{i=1}^{p}\beta_i x_i
+\end{equation}
+
+\noindent con intercepto $\beta_0 = -1.9577$. Los términos de mayor magnitud absoluta se presentan en el Cuadro~\ref{cuad:coeficientes}; el listado completo se encuentra en el Anexo~\ref{anx:formula}.
+
+\begin{table}[H]
+\centering
+\caption{Coeficientes de mayor magnitud del modelo final}
+\label{cuad:coeficientes}
+\small
+\begin{tabular}{lr}
+\hline
+\textbf{Término} & \textbf{Coeficiente} \\
+\hline
+\texttt{canal\_de\_anuencia = Referencia}         & $-1.9124$ \\
+\texttt{canal\_de\_contacto} (categorías agrupadas) & $+1.8356$ \\
+\texttt{opciones\_visitadas = \_missing\_}        & $-1.5828$ \\
+\texttt{participantes\_en\_credito = \_missing\_} & $-1.2080$ \\
+\texttt{campania\_tipo = footer}                  & $+0.9628$ \\
+\texttt{estado\_civil = \_missing\_}              & $-0.9310$ \\
+\texttt{razon\_de\_compra = \_missing\_}          & $-0.8512$ \\
+\texttt{canal\_de\_contacto = Visita Inédita}     & $-0.8307$ \\
+\texttt{tipo\_unidad = 2 Habs}                    & $-0.8253$ \\
+\path{canal_de_anuencia} (categorías agrupadas) & $+0.8039$ \\
+\hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+Los coeficientes de mayor magnitud muestran que la estimación de conversión se apoyó principalmente en características relacionadas con el origen del lead, su canal de contacto y la información recopilada durante la gestión comercial. Entre los términos con coeficientes positivos destacan las categorías agrupadas de \texttt{canal\_de\_contacto} ($+1.8356$), \texttt{campania\_tipo = footer} ($+0.9628$) y las categorías agrupadas de \path{canal_de_anuencia} ($+0.8039$). En conjunto, estos resultados muestran que la forma en que el prospecto ingresó y fue contactado aportó información relevante para diferenciar su probabilidad estimada de conversión.
+
+Otro resultado relevante es la presencia de valores faltantes en cuatro de los diez términos de mayor magnitud. La ausencia de información en \texttt{opciones\_visitadas}, \texttt{participantes\_en\_credito}, \texttt{estado\_civil} y \texttt{razon\_de\_compra} estuvo asociada con menores probabilidades estimadas de conversión. El patrón sugiere que el nivel de información disponible sobre un lead también distingue perfiles con diferente comportamiento de conversión, por lo que la ausencia de datos constituyó una señal aprovechada por el modelo y no únicamente una condición de incompletitud del registro.
+
+\subsubsection{Ausencia de información en el modelo}
+\label{sec:disc-ausencia-senal}
+
+Cuatro de los diez coeficientes de mayor magnitud correspondieron a valores faltantes. La ausencia de información en \texttt{opciones\_visitadas} ($-1.58$), \texttt{participantes\_en\_credito} ($-1.21$), \texttt{estado\_civil} ($-0.93$) y \texttt{razon\_de\_compra} ($-0.85$) estuvo asociada con una menor probabilidad estimada de conversión. La recurrencia del mismo patrón en variables distintas muestra que el grado de información registrado sobre un lead también aportó elementos para su priorización.
+
+Este resultado adquiere especial relevancia frente al análisis de completitud presentado anteriormente. La exclusión de registros incompletos habría reducido el universo disponible y eliminado conversiones reales; al conservar estos registros y representar explícitamente la ausencia, el modelo pudo utilizar las diferencias en completitud como parte de la información disponible para distinguir entre leads. De esta manera, los valores faltantes no se limitaron a reducir la cantidad de información disponible, sino que también formaron parte de los patrones identificados por el modelo. Este patrón podría estar relacionado con la incorporación progresiva de información durante la gestión comercial, ya que varios de estos campos se completan conforme avanza la interacción con el prospecto.
+
+\subsubsection{Identidad del proyecto}
+\label{sec:disc-generalizacion}
+
+Al incorporar la identidad del proyecto y la fuente como predictores adicionales, manteniendo las mismas 22{,}656 observaciones y el mismo procedimiento de validación, el PR-AUC aumentó de 0.2215 a 0.2333 y el \textit{lift} del primer decil de 4.15 a 4.32. La diferencia de 0.0118 en PR-AUC equivale a una mejora relativa del $5.3\%$ respecto del modelo final.
+
+El incremento muestra que la identidad del proyecto contiene información asociada con la conversión. Sin embargo, esta información proviene del comportamiento histórico de cada desarrollo: el modelo puede aprender, por ejemplo, que los leads de determinados proyectos han convertido con mayor frecuencia que los de otros. Aunque esta señal mejora la predicción sobre los proyectos observados, depende de contar con antecedentes del mismo desarrollo.
+
+Por esta razón, la identidad del proyecto no se incorporó al modelo final. Su exclusión permite que la priorización se base en características del lead, su procedencia y la información disponible durante la gestión comercial, en lugar de depender del desempeño histórico del proyecto al que pertenece. La reducción relativamente pequeña del PR-AUC, de 0.2333 a 0.2215, muestra el costo predictivo de esta decisión y permite cuantificar el desempeño que se dejó de capturar al prescindir de esa información.
+
+\subsection{Segmentación de leads}
+\label{subsec:km-segmentacion}
+
+La segmentación mediante K-Means se estimó sobre el Universo S a partir de cinco variables de perfil: edad, sexo, estado civil, razón de compra y tipo de unidad. La conversión no intervino en la formación de los grupos. Se evaluaron 37 configuraciones de variables y 323 ajustes del algoritmo y se seleccionó la configuración R1, que identificó seis grupos y alcanzó un coeficiente de silueta de 0.517. El registro completo de estas configuraciones se presenta en el Anexo~\ref{anx:modelos-evaluados}, mientras que las métricas internas y los perfiles completos de los seis grupos se incluyen en el Anexo~\ref{anx:km-detalle}.
+
+
+Los grupos se diferenciaron principalmente por razón de compra, sexo y estado civil, mientras que la edad introdujo variación adicional y el tipo de unidad tuvo una participación menor en la separación. Esta estructura hace que los grupos puedan describirse a partir de atributos observables.
+
+\subsubsection{Perfil descriptivo de los grupos}
+
+El Cuadro~\ref{cuad:km-perfil-descriptivo} resume las características predominantes de los seis grupos y propone una denominación descriptiva para facilitar su interpretación. La razón de compra constituye la principal diferencia entre los perfiles identificados: cuatro grupos corresponden a leads interesados en adquirir vivienda (0, 2, 3 y 4), mientras que dos concentran a quienes declararon una motivación de inversión (1 y 5). Dentro de los perfiles orientados a vivienda aparecen diferencias adicionales por sexo, estado civil, edad y tipo de unidad. Los grupos 0 y 2 están conformados por mujeres y los grupos 3 y 4 por hombres, mientras que los grupos 2 y 3 presentan una mayor preferencia por unidades de tres habitaciones. Los dos grupos de inversión incluyen ambos sexos, aunque con predominio masculino, y se distinguen principalmente por la edad y el estado civil: el grupo 1 presenta una edad promedio de 45 años y predominio de personas casadas, frente a 36 años y predominio de personas solteras en el grupo 5.
+
+\begin{table}[H]
+\centering
+\caption{Perfil descriptivo de los seis grupos del modelo final}
+\label{cuad:km-perfil-descriptivo}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{cp{3.7cm}rrccccc}
+\hline
+\textbf{Grupo} & \textbf{Nombre} & \textbf{N} & \textbf{\%} & \textbf{Edad} & \textbf{Sexo} & \textbf{Est.\ civil} & \textbf{Motivación} & \textbf{Unidad} \\
+\hline
+0 & Compradora independiente            & 3{,}562 & 17.3 & 35 & F  & Solter@ & Vivienda  & 2 hab. \\
+1 & Inversionista consolidado           & 3{,}379 & 16.4 & 45 & M  & Casad@  & Inversión & 2 hab. \\
+2 & Compradora residencial consolidada  & 2{,}798 & 13.6 & 42 & F  & Casad@  & Vivienda  & 3 hab. \\
+3 & Comprador familiar de mayor espacio & 4{,}339 & 21.0 & 43 & M  & Casad@  & Vivienda  & 3 hab. \\
+4 & Comprador joven de vivienda         & 4{,}004 & 19.4 & 34 & M  & Solter@ & Vivienda  & 2 hab. \\
+5 & Inversionista emergente             & 2{,}565 & 12.4 & 36 & M  & Solter@ & Inversión & 2 hab. \\
+\hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+Los perfiles muestran que la cartera no constituye un conjunto homogéneo de prospectos. Incluso entre leads con una misma razón general de compra aparecen diferencias en edad, estado civil y preferencia de unidad que permiten distinguir perfiles comerciales más específicos. Esta caracterización aporta una segunda dimensión al análisis de la cartera: mientras el modelo predictivo establece una prioridad individual de atención, los grupos permiten describir las características predominantes de los prospectos que conforman esa cartera.
+
+La Figura~\ref{fig:km-pca} proyecta las 20{,}647 observaciones sobre los dos primeros componentes principales de la matriz de segmentación, que explican en conjunto el $59.4\%$ de la varianza. La separación observada entre los seis grupos coincide con el coeficiente de silueta de 0.517 y muestra que los perfiles identificados presentan estructuras diferenciadas en las variables utilizadas para la segmentación.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.92\textwidth]{figuras/km_pca.png}
+\caption{Proyección de los leads sobre los dos primeros componentes principales, coloreada por grupo}
+\label{fig:km-pca}
+\fuentepropia
+\end{figure}
+
+La conversión se incorporó posteriormente al análisis para determinar si los perfiles identificados presentaban diferencias en su comportamiento comercial. Las tasas obtenidas se presentan en el Cuadro~\ref{cuad:km-conversion} y la Figura~\ref{fig:km-conversion}.
+
+\begin{table}[H]
+\centering
+\caption{Tasa de conversión por grupo, con intervalos de Wilson al $95\%$}
+\label{cuad:km-conversion}
+\small
+\begin{tabular}{crrrcrl}
+\hline
+\textbf{Grupo} & \textbf{N} & \textbf{Conv.} & \textbf{Tasa} & \textbf{IC $95\%$} & \textbf{Lift} & \textbf{Clasificación} \\
+\hline
+0 & 3{,}562 &  79 & $2.22\%$ & [1.78; 2.76] & 0.63 & Inferior \\
+1 & 3{,}379 & 178 & $5.27\%$ & [4.56; 6.07] & 1.49 & \textbf{Superior} \\
+2 & 2{,}798 &  63 & $2.25\%$ & [1.76; 2.87] & 0.64 & Inferior \\
+3 & 4{,}339 & 126 & $2.90\%$ & [2.44; 3.45] & 0.82 & Inferior \\
+4 & 4{,}004 & 127 & $3.17\%$ & [2.67; 3.76] & 0.90 & Sin diferencia \\
+5 & 2{,}565 & 158 & $6.16\%$ & [5.29; 7.16] & 1.74 & \textbf{Superior} \\
+\hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{figuras/km_conversion.png}
+\caption{Tasa de conversión por grupo con intervalos de confianza}
+\label{fig:km-conversion}
+\fuentepropia
+\end{figure}
+
+Los grupos 5 y 1, correspondientes a los perfiles inversionista emergente e inversionista consolidado, presentaron las mayores tasas de conversión, con $6.16\%$ y $5.27\%$, respectivamente. Sus \textit{lift} de 1.74 y 1.49 indican que ambos concentraron conversiones por encima de la tasa promedio del Universo S. En contraste, los cuatro grupos orientados a vivienda registraron tasas entre $2.22\%$ y $3.17\%$. La diferencia observada reproduce, desde una caracterización multivariable de los prospectos, el patrón identificado previamente para la razón de compra: los perfiles asociados con inversión presentan una mayor propensión observada a alcanzar la reserva.
+
+La comparación con el modelo predictivo permite delimitar el uso comercial de la segmentación. El grupo con mayor conversión alcanzó un \textit{lift} de 1.74, considerablemente menor que el 4.15 obtenido por el primer decil del modelo predictivo. Por tanto, los grupos aportan mayor valor para caracterizar la composición de la cartera que para determinar qué leads individuales deben atenderse primero. En la práctica, ambos resultados cumplen funciones complementarias: el puntaje predictivo permite establecer la prioridad de atención de cada lead, mientras que el grupo al que pertenece aporta contexto sobre su perfil, motivación de compra y preferencia de unidad.
+
+Esta combinación permite que la priorización comercial no se limite a identificar qué prospectos presentan mayor probabilidad estimada de conversión, sino que incorpore información sobre el tipo de prospecto que se encuentra detrás de esa prioridad. Para mercadeo y ventas, los perfiles pueden utilizarse como base para analizar estrategias diferenciadas de comunicación, oferta y seguimiento según las características predominantes de cada grupo. En particular, la distinción entre perfiles orientados a inversión y vivienda, así como las diferencias en preferencia de unidad, proporciona criterios para adaptar el contenido comercial sin sustituir la priorización individual producida por el modelo predictivo.
+
+% ================================================================================
+\section{Evaluación del modelo predictivo}
+\label{sec:res-evaluacion}
+% ================================================================================
+
+\subsection{Discriminación y calibración}
+
+Las métricas calculadas sobre predicciones fuera de la partición de entrenamiento se presentan en el Cuadro~\ref{cuad:metricas-final}.
+
+\begin{table}[H]
+\centering
+\caption{Métricas consolidadas del modelo final (\emph{out-of-fold})}
+\label{cuad:metricas-final}
+\begin{tabular}{lr}
+\hline
+\textbf{Métrica} & \textbf{Valor} \\
+\hline
+PR-AUC                            & 0.2215 \\
+ROC-AUC                           & 0.7958 \\
+Brier score                       & 0.0282 \\
+Exactitud                         & 0.7222 \\
+Exactitud balanceada              & 0.7119 \\
+$F_1$                             & 0.1413 \\
+$F_2$ (ponderada a \emph{recall}) & 0.2713 \\
+MCC                               & 0.1658 \\
+$\kappa$ de Cohen                 & 0.0878 \\
+\hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+El modelo alcanzó un PR-AUC de 0.2215. En el Universo H, las conversiones representan el $3.26\%$ de los leads; por tanto, un ordenamiento sin capacidad predictiva mantendría, en promedio, una precisión cercana a $3.26\%$ a lo largo de la curva Precision--Recall. En consecuencia, el PR-AUC esperado bajo esta referencia es aproximadamente 0.0326, como se observa en la Figura~\ref{fig:pr-curve}. La diferencia entre esta referencia y el resultado obtenido muestra que el modelo logra concentrar una mayor proporción de conversiones entre los leads ubicados en las primeras posiciones del ordenamiento, lo que permite orientar el esfuerzo comercial hacia una fracción de la cartera con mayor presencia de prospectos que posteriormente alcanzan la reserva.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{figuras/mod_pr_curve.png}
+\caption{Curva de precisión--\emph{recall} del modelo final frente a la referencia sin capacidad discriminativa (Universo H)}
+\label{fig:pr-curve}
+\fuentepropia
+\end{figure}
+
+
+El ROC-AUC de 0.7958 indica que, al comparar un lead convertido con uno no convertido, el modelo asigna una puntuación mayor al convertido en aproximadamente ocho de cada diez pares. Este resultado confirma que el ordenamiento generado distingue de manera consistente entre leads con diferente resultado comercial. Sin embargo, debido a la baja proporción de conversiones en el Universo H, el PR-AUC resulta más informativo para evaluar la capacidad de concentrar precisamente los casos que interesa identificar.
+
+El Brier score fue de 0.0282, frente a 0.0315 para una predicción que asignara a todos los leads la tasa base de conversión del Universo H. Esto representa una reducción del $10.5\%$ en el error cuadrático medio de las probabilidades estimadas. El resultado muestra que las probabilidades generadas por el modelo presentan un menor error respecto de los resultados observados que una predicción uniforme basada únicamente en la tasa general de conversión.
+
+La exactitud del modelo fue de $72.2\%$. Sin embargo, esta métrica resulta poco informativa de forma aislada debido al desbalance entre las clases: dado que el $96.7\%$ de los leads no alcanza la conversión, un clasificador que asignara todos los casos como no convertidos obtendría una exactitud cercana al $96.7\%$, aun cuando no identificaría ninguna conversión. Por esta razón, una exactitud elevada no necesariamente representa un mejor desempeño para el objetivo de priorización. En este contexto, resulta más relevante evaluar qué proporción de las conversiones logra concentrar el modelo dentro de una fracción reducida de la cartera, aspecto que se examina mediante el \textit{recall}, la ganancia acumulada y el \textit{lift}.
+
+La Figura~\ref{fig:mod-curvas} permite observar este comportamiento a distintos niveles de priorización. La curva de ganancia acumulada se mantiene por encima de la referencia aleatoria durante la mayor parte del recorrido, lo que muestra que ordenar los leads según el puntaje del modelo permite encontrar conversiones más rápidamente que atender la cartera sin diferenciación. El mismo patrón se refleja en el \textit{lift}: la ventaja es mayor en los primeros cortes de la cartera y disminuye progresivamente conforme se incorporan leads con puntuaciones menores. Este comportamiento es consistente con el propósito operativo del modelo, ya que su mayor aporte se concentra precisamente en las primeras posiciones del ordenamiento.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figuras/mod_curvas.png}
+\caption{Curvas ROC, ganancia acumulada y \emph{lift} por corte del modelo final (predicciones \emph{out-of-fold}, Universo H)}
+\label{fig:mod-curvas}
+\fuentepropia
+\end{figure}
+
+
+\subsection{Importancia de variables}
+\label{sec:res-importancia}
+
+La importancia por permutación situó a \texttt{es\_referido} como la variable con mayor contribución al desempeño predictivo: al permutar sus valores, el PR-AUC disminuyó en promedio 0.0786. Le siguieron \texttt{canal\_de\_contacto}, con una reducción de 0.0565, y \path{canal_de_anuencia}, con 0.0465. La interacción entre edad e ingreso ocupó la cuarta posición, con 0.0329, mientras que \texttt{es\_inversion} presentó una importancia de 0.0166. La Figura~\ref{fig:importancia} presenta los resultados para el conjunto de variables evaluadas.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.65\textwidth]{figuras/mod_importancia.png}
+\caption{Importancia por permutación de las variables de entrada del modelo final, medida mediante la caída media de PR-AUC}
+\label{fig:importancia}
+\fuentepropia
+\end{figure}
+
+Las tres variables con mayor importancia corresponden a características relacionadas con la procedencia y la vía de llegada del prospecto. En conjunto, este resultado muestra que la información sobre cómo se originó el lead y cómo ingresó al proceso comercial aporta una señal particularmente relevante para su priorización. La diferencia respecto de las variables restantes también es considerable: la cuarta variable, correspondiente a la interacción entre edad e ingreso, produjo una reducción media de PR-AUC de 0.0329 al ser permutada.
+
+Las características demográficas consideradas de forma individual mostraron una contribución considerablemente menor. La permutación de \texttt{edad\_n}, \texttt{sexo} e \texttt{ingreso\_familiar} produjo cambios cercanos a cero en el PR-AUC, mientras que la interacción entre edad e ingreso se ubicó entre las variables de mayor importancia. Este resultado indica que la información conjunta de ambas características aporta al modelo una señal predictiva que no se observa con la misma intensidad al evaluarlas individualmente. 
+
+
+\subsection{Comparación con selección aleatoria}
+\label{subsec:lectura-comercial}
+
+La simulación de Monte Carlo permitió comparar las conversiones concentradas por el ordenamiento del modelo con las que podrían obtenerse al seleccionar la misma cantidad de leads de forma aleatoria. Para obtener una referencia estable del comportamiento esperado bajo selección aleatoria, el análisis de alta resolución comprendió 1.6 millones de simulaciones, correspondientes a 200{,}000 repeticiones en cada uno de ocho niveles de capacidad. El Cuadro~\ref{cuad:montecarlo} presenta la comparación para los principales niveles de capacidad comercial.
+
+\begin{table}[H]
+\centering
+\caption{Conversiones capturadas por el modelo frente a selección aleatoria}
+\label{cuad:montecarlo}
+\small
+\begin{tabular}{rrrrcrr}
+\hline
+\textbf{Capacidad} & \textbf{Leads} & \textbf{Modelo} & \textbf{Azar (media)} & \textbf{IC $95\%$ azar} & \textbf{Lift} & \textbf{Incremento} \\
+\hline
+$5.0\%$  & 1{,}133 & 223 & 36.96  & [26; 49]   & 6.03 & $+503\%$ \\
+$10.0\%$ & 2{,}266 & 307 & 73.91  & [59; 90]   & 4.15 & $+315\%$ \\
+$14.3\%$ & 3{,}234 & 370 & 105.49 & [88; 124]  & 3.51 & $+251\%$ \\
+$19.9\%$ & 4{,}498 & 444 & 146.72 & [126; 168] & 3.03 & $+203\%$ \\
+\hline
+\end{tabular}
+\fuentepropia
+\end{table}
+
+En todos los niveles de capacidad evaluados, el modelo concentró un número de conversiones superior al esperado mediante selección aleatoria. La diferencia fue particularmente amplia en las primeras posiciones del ordenamiento. Al considerar el $5.0\%$ de la cartera, equivalente a 1{,}133 leads, el modelo concentró 223 de las 739 conversiones, frente a una media de 36.96 bajo selección aleatoria. Esto significa que aproximadamente tres de cada diez conversiones existentes en el Universo H se encuentran dentro del primer $5.0\%$ del ordenamiento. Al ampliar la capacidad al $10.0\%$, el número de conversiones concentradas aumentó a 307, equivalente al $41.5\%$ de todas las conversiones del universo.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{figuras/mc_distribucion.png}
+\caption{Posición del modelo dentro de la distribución de la selección aleatoria}
+\label{fig:mc-distribucion}
+\fuentepropia
+\end{figure}
+
+La Figura~\ref{fig:mc-distribucion} muestra la magnitud de esta separación. En el corte correspondiente al $5.0\%$ de la cartera, ninguna de las 200{,}000 selecciones aleatorias alcanzó las 223 conversiones concentradas por el modelo; el máximo observado fue de 63. La diferencia también se observó en los demás niveles de capacidad evaluados. En todos los casos, las primeras posiciones del ordenamiento concentraron más conversiones que las esperadas mediante una selección aleatoria de la misma cantidad de leads.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{figuras/mc_capacidad.png}
+\caption{Conversiones capturadas por el modelo y por selección aleatoria según la capacidad comercial}
+\label{fig:mc-capacidad}
+\fuentepropia
+\end{figure}
+
+Como muestra la Figura~\ref{fig:mc-capacidad}, la ventaja del modelo se mantiene al modificar la cantidad de leads que pueden ser atendidos. El \textit{lift} fue de 6.03 en el primer $5.0\%$ de la cartera, 4.15 en el primer $10.0\%$ y 3.03 al considerar el $19.9\%$. La disminución progresiva del \textit{lift} muestra que la señal predictiva se concentra principalmente en las primeras posiciones: conforme aumenta la capacidad y se incorporan leads con puntuaciones menores, también disminuye la concentración de conversiones.
+
+Los resultados muestran que el valor comercial del modelo se mantiene bajo distintos niveles de capacidad operativa. La ventaja relativa es mayor cuando la cantidad de leads que puede atenderse es reducida, debido a que las primeras posiciones del ordenamiento presentan la mayor concentración de conversiones. A medida que aumenta la capacidad disponible, el equipo comercial puede ampliar progresivamente la proporción de la cartera atendida siguiendo el mismo orden de prioridad. Aunque la concentración disminuye conforme se incorporan leads con puntuaciones menores, en todos los niveles evaluados el modelo mantuvo una ventaja frente a la selección aleatoria. De esta forma, el ordenamiento puede utilizarse con distintos niveles de capacidad y permite orientar el esfuerzo comercial hacia los leads con mayor puntuación dentro de los recursos disponibles.
+
+La Figura~\ref{fig:mc-esfuerzo} traduce esta concentración en términos de esfuerzo comercial. En la cartera completa del Universo H se observa, en promedio, una conversión por cada 31 leads. Al seguir el orden generado por el modelo, esta relación disminuye a 5 contactos por conversión cuando la capacidad permite priorizar el primer $5\%$ de la cartera y a 7 al considerar el primer $10\%$. Incluso al ampliar la cobertura al $20\%$ y $30\%$ de la cartera, se requieren aproximadamente 10 y 13 contactos por conversión, respectivamente, valores todavía considerablemente inferiores a la referencia de la cartera completa.
+
+La diferencia muestra que la priorización permite aprovechar con mayor eficiencia una capacidad comercial limitada. El beneficio es especialmente marcado en las primeras posiciones del ordenamiento, donde se requiere atender a un número menor de leads por cada conversión histórica concentrada. Conforme aumenta la capacidad, el equipo puede extender la atención hacia una proporción mayor de la cartera; aunque el esfuerzo requerido por conversión aumenta progresivamente, el ordenamiento mantiene una ventaja frente a una atención sin priorización.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{figuras/mc_esfuerzo_conversion.png}
+\caption{Contactos por conversión histórica según el porcentaje de la cartera priorizada}
+\label{fig:mc-esfuerzo}
+\fuentepropia
+\end{figure}
+
+La misma relación puede expresarse en términos de conversiones concentradas por cada 100 leads priorizados. Como muestra la Figura~\ref{fig:mc-conv100}, en la cartera completa se observan aproximadamente 3.3 conversiones por cada 100 leads. Al concentrar la atención en las primeras posiciones del ordenamiento, esta relación aumenta a 19.7 conversiones por cada 100 leads en el primer $5\%$ de la cartera y a 13.5 en el primer $10\%$. Incluso al ampliar la capacidad al $20\%$ y $30\%$ de la cartera, se mantienen aproximadamente 9.9 y 7.7 conversiones por cada 100 leads priorizados, respectivamente.
+
+Esta lectura permite dimensionar el rendimiento asociado con distintos niveles de capacidad comercial. Un equipo con capacidad para atender una fracción reducida de la cartera puede concentrar su esfuerzo en grupos donde la presencia histórica de conversiones es considerablemente mayor que en el universo completo. Conforme aumenta la cantidad de leads priorizados, la concentración disminuye progresivamente, pero permanece por encima de la tasa base en todos los niveles evaluados.
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{figuras/mc_conversiones_por_100.png}
+\caption{Conversiones históricas por cada 100 leads priorizados según la capacidad comercial}
+\label{fig:mc-conv100}
+\fuentepropia
+\end{figure}
+
+% ================================================================================
+\section{Implementación en Power BI}
+\label{sec:res-implementacion}
+% ================================================================================
+
+La implementación de los modelos se realizó mediante el paquete \texttt{scoring\_leads}, integrado al flujo de datos utilizado en Power BI. Como muestra la Figura~\ref{fig:implementacion}, el paquete recibe la tabla de leads, prepara las variables requeridas y ejecuta los componentes de segmentación y predicción. El resultado conserva la estructura de la tabla original e incorpora dos campos analíticos: \texttt{cluster}, que identifica el grupo asignado al lead cuando se dispone de la información requerida para la segmentación, y \texttt{percentil}, que expresa su prioridad relativa dentro de la cartera.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{figuras/pbi_dashboard.png}
+\caption{Flujo de implementación de los modelos de segmentación y priorización}
+\label{fig:implementacion}
+\fuentepropia
+\end{figure}
+
+La prioridad se expresó mediante percentiles para facilitar la lectura del ordenamiento generado por el modelo. En lugar de utilizar únicamente la probabilidad estimada de conversión, cada lead se ubica en una escala relativa de 0 a 100 según su posición respecto del resto de la cartera. Esta transformación conserva el orden establecido por el modelo y permite distinguir con mayor claridad los prospectos que ocupan las posiciones superiores, aun cuando sus probabilidades absolutas de conversión sean bajas.
+
+La incorporación conjunta de \texttt{percentil} y \texttt{cluster} traslada los resultados de los dos componentes analíticos a una misma tabla. El percentil permite establecer la prioridad relativa de cada lead, mientras que el grupo aporta una caracterización de su perfil cuando existe información suficiente para asignarlo. De esta manera, la implementación proporciona dos elementos complementarios para la gestión comercial: la posición del prospecto dentro del orden de atención y el perfil al que pertenece.
