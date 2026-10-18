@@ -37,7 +37,7 @@ The project was designed around a specific decision: **prioritizing sales outrea
 
 <img src="docs/assets/dashboard-funnel.png" width="100%" alt="Anonymized Power BI view of the historical sales funnel and aggregate loss reasons, without the company header or logo." />
 
-Two selected views show how the analysis becomes a readable interface. [Explore the dashboard gallery →](docs/en/DASHBOARD.md)
+All eight screens show how the analysis becomes a readable interface, with anonymized labels and a synthetic prediction table. [Explore the dashboard gallery →](docs/en/DASHBOARD.md)
 
 <sub>Static aggregate views. Original chart labels are in Spanish; English reading notes are provided in the gallery.</sub>
 

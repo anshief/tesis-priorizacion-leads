@@ -37,7 +37,7 @@ El proyecto se diseñó alrededor de una decisión concreta: **ordenar la atenci
 
 <img src="docs/assets/dashboard-funnel.png" width="100%" alt="Vista anonimizada del embudo comercial histórico y razones de pérdida agregadas en Power BI, sin la cabecera ni el logo de la empresa." />
 
-Dos vistas seleccionadas muestran cómo el análisis se convierte en una interfaz de consulta. [Explorar la galería del dashboard →](docs/DASHBOARD.md)
+Las ocho pantallas muestran cómo el análisis se convierte en una interfaz de consulta, con etiquetas anonimizadas y una tabla de predicción sintética. [Explorar la galería del dashboard →](docs/DASHBOARD.md)
 
 <sub>Vistas estáticas de resultados agregados. La galería explica el alcance y los denominadores de cada vista.</sub>
 

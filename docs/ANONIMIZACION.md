@@ -10,7 +10,7 @@ Esta edición pública utiliza una exportación independiente, sin el historial 
 - Exclusión completa de bases originales, bases procesadas, identificadores y predicciones por registro.
 - Exclusión de todos los modelos originales. Los artefactos de demostración se generan desde cero con datos sintéticos y semilla fija.
 - Retirada de salidas, adjuntos y metadatos de ejecución de los notebooks.
-- Exclusión de figuras originales confidenciales, capturas sin anonimizar del CRM y Power BI, manuales internos y anexos PDF. Se publican dos vistas agregadas del dashboard como PNG renderizados después de retirar la cabecera y el logo de la empresa. Se excluyen la pantalla de predicción, las puntuaciones individuales, los nombres comerciales y los archivos adjuntos originales.
+- Exclusión de figuras originales confidenciales, capturas sin anonimizar del CRM y Power BI, manuales internos y anexos PDF. Se publican las ocho pantallas del dashboard como PNG revisados y un PDF aplanado. Se retiran o generalizan la marca y las etiquetas identificables; se excluyen la fotografía del edificio y los valores de las tarjetas de precios comerciales. La tabla de predicción se sustituye por completo con ejemplos explícitamente ficticios. Se excluyen las puntuaciones individuales reales y los adjuntos originales.
 - Eliminación de ejemplos de valores observados del diccionario; conservación de definiciones y porcentajes agregados.
 - Sustitución del enriquecimiento con precios, direcciones y catálogos comerciales por una adaptación genérica explícita.
 - Exclusión de las correspondencias entre etiquetas genéricas y entidades originales.
