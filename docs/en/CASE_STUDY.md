@@ -40,8 +40,10 @@ At another operating point, the model recovers 70% of conversions by prioritizin
 
 The integration receives a table, preserves its original rows and columns, and adds `cluster` and `percentil`. The public edition lets readers try that contract with independently generated synthetic data and models. It does not distribute the original models or reproduce their historical performance.
 
+[View the anonymized dashboard gallery →](DASHBOARD.md)
+
 ---
 
 **Next step** · [Read the anonymized thesis (Spanish)](../../tesis/tesis_publica_anonimizada.pdf) / [Explore the code](READING_GUIDE.md) / [Run the demonstration](REPRODUCIBILITY.md)
 
-<sub>Business identities, individual records, screenshots, and confidential operational material are excluded. Architectural illustrations are conceptual. See the [anonymization scope](ANONYMIZATION.md).</sub>
+<sub>Business identities, individual records, unredacted screenshots, and confidential operational material are excluded. Architectural illustrations are conceptual. See the [anonymization scope](ANONYMIZATION.md).</sub>

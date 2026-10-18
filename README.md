@@ -33,6 +33,14 @@ This thesis connects sales process understanding, data quality, segmentation, an
 
 The project was designed around a specific decision: **prioritizing sales outreach**. Segmentation describes profiles, the predictive model ranks opportunities, and the integration brings both outputs into the team's workflow.
 
+## The dashboard, in practice
+
+<img src="docs/assets/dashboard-funnel.png" width="100%" alt="Anonymized Power BI view of the historical sales funnel and aggregate loss reasons, without the company header or logo." />
+
+Two selected views show how the analysis becomes a readable interface. [Explore the dashboard gallery →](docs/en/DASHBOARD.md)
+
+<sub>Static aggregate views. Original chart labels are in Spanish; English reading notes are provided in the gallery.</sub>
+
 ## Choose your path
 
 <table>
@@ -59,7 +67,7 @@ The project was designed around a specific decision: **prioritizing sales outrea
 
 **Approved aggregate results. Generalized business names. A synthetic demonstration.**
 
-The public edition excludes CRM databases, real identifiers, name mappings, exports, `.pbix` files, screenshots, original figures, and models trained on real customers. The PDF is a **portfolio adaptation** that omits confidential visual material and appendices.
+The public edition excludes CRM databases, real identifiers, name mappings, exports, `.pbix` files, unredacted screenshots, confidential original figures, and models trained on real customers. The PDF is a **portfolio adaptation** that omits confidential visual material and appendices.
 
 The demo trains its own models on invented records. Its results and segments **do not correspond to the historical thesis models**.
 

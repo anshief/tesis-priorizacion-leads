@@ -42,8 +42,10 @@ En otro punto de operación, el modelo recupera el 70 % de las conversiones al p
 
 La integración recibe una tabla, conserva sus filas y columnas originales y agrega `cluster` y `percentil`. La copia pública permite probar ese contrato con modelos y datos sintéticos, generados de forma independiente. No distribuye los modelos originales ni reproduce su rendimiento histórico.
 
+[Ver la galería anonimizada del dashboard →](DASHBOARD.md)
+
 ---
 
 **Siguiente paso** · [Leer la tesis anonimizada](../tesis/tesis_publica_anonimizada.pdf) / [Revisar el código](GUIA.md) / [Ejecutar la demostración](REPRODUCIBILIDAD.md)
 
-<sub>Identidades comerciales, registros individuales, capturas y material operativo confidencial quedan fuera de esta edición. Las ilustraciones arquitectónicas son conceptuales. Consulta el [alcance de la anonimización](ANONIMIZACION.md).</sub>
+<sub>Identidades comerciales, registros individuales, capturas sin anonimizar y material operativo confidencial quedan fuera de esta edición. Las ilustraciones arquitectónicas son conceptuales. Consulta el [alcance de la anonimización](ANONIMIZACION.md).</sub>

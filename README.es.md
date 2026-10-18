@@ -33,6 +33,14 @@ Esta tesis conecta comprensión del proceso comercial, calidad de datos, segment
 
 El proyecto se diseñó alrededor de una decisión concreta: **ordenar la atención comercial**. La segmentación describe perfiles; el modelo predictivo ordena oportunidades; la integración entrega esos resultados en el flujo de trabajo del equipo.
 
+## El dashboard en la práctica
+
+<img src="docs/assets/dashboard-funnel.png" width="100%" alt="Vista anonimizada del embudo comercial histórico y razones de pérdida agregadas en Power BI, sin la cabecera ni el logo de la empresa." />
+
+Dos vistas seleccionadas muestran cómo el análisis se convierte en una interfaz de consulta. [Explorar la galería del dashboard →](docs/DASHBOARD.md)
+
+<sub>Vistas estáticas de resultados agregados. La galería explica el alcance y los denominadores de cada vista.</sub>
+
 ## Elige tu recorrido
 
 <table>
@@ -59,7 +67,7 @@ El proyecto se diseñó alrededor de una decisión concreta: **ordenar la atenci
 
 **Resultados agregados autorizados. Nombres comerciales generalizados. Demostración sintética.**
 
-La edición pública excluye las bases del CRM, identificadores reales, correspondencias de nombres, exportaciones, archivos `.pbix`, capturas, figuras originales y modelos entrenados con datos reales. El PDF es una **adaptación para portafolio** que omite material visual y anexos confidenciales.
+La edición pública excluye las bases del CRM, identificadores reales, correspondencias de nombres, exportaciones, archivos `.pbix`, capturas sin anonimizar, figuras originales confidenciales y modelos entrenados con datos reales. El PDF es una **adaptación para portafolio** que omite material visual y anexos confidenciales.
 
 La demo entrena sus propios modelos sobre registros inventados. Sus resultados y segmentos **no corresponden a los modelos históricos de la tesis**.
 

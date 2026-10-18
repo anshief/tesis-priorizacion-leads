@@ -10,7 +10,7 @@ This public edition uses an independent export without the private working histo
 - Original and processed databases, identifiers, and record-level predictions are excluded entirely.
 - All original models are excluded. Demonstration artifacts are generated from scratch with synthetic data and a fixed seed.
 - Stored notebook outputs, attachments, and execution metadata are removed.
-- Original figures, CRM and Power BI screenshots, internal manuals, and PDF appendices are excluded.
+- Confidential original figures, unredacted CRM and Power BI screenshots, internal manuals, and PDF appendices are excluded. Two aggregate dashboard views are published as rendered PNGs after removing the company header and logo. The prediction screen, individual scores, commercial names, and original attachment files remain excluded.
 - Examples of observed dictionary values are removed; definitions and aggregate percentages are retained.
 - Enrichment with prices, addresses, and commercial catalogs is replaced with an explicitly generic adaptation.
 - Mappings between generic labels and original entities are excluded.
