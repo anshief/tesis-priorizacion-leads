@@ -1,3 +1,5 @@
+[English](en/ANONYMIZATION.md) | **Español** · [Portafolio](../README.es.md)
+
 # Alcance de la anonimización
 
 Esta edición pública utiliza una exportación independiente, sin el historial de trabajo privado.

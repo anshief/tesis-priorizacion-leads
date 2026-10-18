@@ -1,3 +1,5 @@
+[English](en/READING_GUIDE.md) | **Español** · [Portafolio](../README.es.md)
+
 # Guía de lectura
 
 1. Lee la [tesis pública anonimizada](../tesis/tesis_publica_anonimizada.pdf): contexto, metodología, resultados agregados y límites.

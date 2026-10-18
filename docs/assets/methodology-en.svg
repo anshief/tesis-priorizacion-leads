@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="590" viewBox="0 0 1600 590" role="img">
+<rect width="1600" height="590" fill="#FFFFFF"/>
+<text x="52" y="27" font-family="Montserrat, Arial, sans-serif" font-size="21" font-weight="600" fill="#666666" dominant-baseline="text-before-edge">FROM PROCESS TO PRACTICAL USE</text>
+<text x="49" y="78" font-family="Montserrat, Arial, sans-serif" font-size="51" font-weight="600" fill="#101010" dominant-baseline="text-before-edge">One decision. Five stages.</text>
+<rect x="52" y="191" width="278" height="285" rx="0" fill="#F5F5F5" stroke="#D5D5D5"/>
+<circle cx="90" cy="231" r="19" fill="#101010"/>
+<text x="77" y="218" font-family="Montserrat, Arial, sans-serif" font-size="20" font-weight="600" fill="#FFFFFF" dominant-baseline="text-before-edge">01</text>
+<text x="74" y="290" font-family="Montserrat, Arial, sans-serif" font-size="29" font-weight="600" fill="#101010" dominant-baseline="text-before-edge">Understand</text>
+<text x="74" y="351" font-family="Montserrat, Arial, sans-serif" font-size="20" font-weight="400" fill="#666666" dominant-baseline="text-before-edge">Sales process</text>
+<text x="74" y="385" font-family="Montserrat, Arial, sans-serif" font-size="20" font-weight="400" fill="#666666" dominant-baseline="text-before-edge">and BPMN mapping.</text>
+<polyline points="332,333 353,333" fill="none" stroke="#101010" stroke-width="2"/>
+<polygon points="348,328 354,333 348,338" fill="#101010" stroke="#101010"/>
+<rect x="359" y="191" width="278" height="285" rx="0" fill="#F5F5F5" stroke="#D5D5D5"/>
+<circle cx="397" cy="231" r="19" fill="#101010"/>
+<text x="384" y="218" font-family="Montserrat, Arial, sans-serif" font-size="20" font-weight="600" fill="#FFFFFF" dominant-baseline="text-before-edge">02</text>
+<text x="381" y="290" font-family="Montserrat, Arial, sans-serif" font-size="29" font-weight="600" fill="#101010" dominant-baseline="text-before-edge">Prepare</text>
+<text x="381" y="351" font-family="Montserrat, Arial, sans-serif" font-size="20" font-weight="400" fill="#666666" dominant-baseline="text-before-edge">Cleaning, validation</text>
+<text x="381" y="385" font-family="Montserrat, Arial, sans-serif" font-size="20" font-weight="400" fill="#666666" dominant-baseline="text-before-edge">and analytical features.</text>
+<polyline points="639,333 660,333" fill="none" stroke="#101010" stroke-width="2"/>
+<polygon points="655,328 661,333 655,338" fill="#101010" stroke="#101010"/>
+<rect x="666" y="191" width="278" height="285" rx="0" fill="#F5F5F5" stroke="#D5D5D5"/>
+<circle cx="704" cy="231" r="19" fill="#101010"/>
+<text x="691" y="218" font-family="Montserrat, Arial, sans-serif" font-size="20" font-weight="600" fill="#FFFFFF" dominant-baseline="text-before-edge">03</text>
+<text x="688" y="290" font-family="Montserrat, Arial, sans-serif" font-size="29" font-weight="600" fill="#101010" dominant-baseline="text-before-edge">Model</text>
+<text x="688" y="351" font-family="Montserrat, Arial, sans-serif" font-size="20" font-weight="400" fill="#666666" dominant-baseline="text-before-edge">K-Means and</text>
+<text x="688" y="385" font-family="Montserrat, Arial, sans-serif" font-size="20" font-weight="400" fill="#666666" dominant-baseline="text-before-edge">logistic regression.</text>
+<polyline points="946,333 967,333" fill="none" stroke="#101010" stroke-width="2"/>
+<polygon points="962,328 968,333 962,338" fill="#101010" stroke="#101010"/>
+<rect x="973" y="191" width="278" height="285" rx="0" fill="#F5F5F5" stroke="#D5D5D5"/>
+<circle cx="1011" cy="231" r="19" fill="#101010"/>
+<text x="998" y="218" font-family="Montserrat, Arial, sans-serif" font-size="20" font-weight="600" fill="#FFFFFF" dominant-baseline="text-before-edge">04</text>
+<text x="995" y="290" font-family="Montserrat, Arial, sans-serif" font-size="29" font-weight="600" fill="#101010" dominant-baseline="text-before-edge">Evaluate</text>
+<text x="995" y="351" font-family="Montserrat, Arial, sans-serif" font-size="20" font-weight="400" fill="#666666" dominant-baseline="text-before-edge">Ranking, thresholds</text>
+<text x="995" y="385" font-family="Montserrat, Arial, sans-serif" font-size="20" font-weight="400" fill="#666666" dominant-baseline="text-before-edge">and Monte Carlo.</text>
+<polyline points="1253,333 1274,333" fill="none" stroke="#101010" stroke-width="2"/>
+<polygon points="1269,328 1275,333 1269,338" fill="#101010" stroke="#101010"/>
+<rect x="1280" y="191" width="278" height="285" rx="0" fill="#F5F5F5" stroke="#D5D5D5"/>
+<circle cx="1318" cy="231" r="19" fill="#101010"/>
+<text x="1305" y="218" font-family="Montserrat, Arial, sans-serif" font-size="20" font-weight="600" fill="#FFFFFF" dominant-baseline="text-before-edge">05</text>
+<text x="1302" y="290" font-family="Montserrat, Arial, sans-serif" font-size="29" font-weight="600" fill="#101010" dominant-baseline="text-before-edge">Integrate</text>
+<text x="1302" y="351" font-family="Montserrat, Arial, sans-serif" font-size="20" font-weight="400" fill="#666666" dominant-baseline="text-before-edge">Cluster and percentile</text>
+<text x="1302" y="385" font-family="Montserrat, Arial, sans-serif" font-size="20" font-weight="400" fill="#666666" dominant-baseline="text-before-edge">for Power BI.</text>
+<text x="52" y="518" font-family="Montserrat, Arial, sans-serif" font-size="23" font-weight="500" fill="#555555" dominant-baseline="text-before-edge">The historical study uses private data. The public demonstration uses synthetic data.</text>
+</svg>

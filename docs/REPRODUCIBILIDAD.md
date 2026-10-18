@@ -1,3 +1,5 @@
+[English](en/REPRODUCIBILITY.md) | **Español** · [Portafolio](../README.es.md)
+
 # Ejecutar la demostración sintética
 
 Usa Python 3.11. Desde la raíz del repositorio:

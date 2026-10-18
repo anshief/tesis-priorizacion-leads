@@ -1,4 +1,6 @@
-[← Volver al portafolio](../README.md)
+[English](en/CASE_STUDY.md) | **Español** · [Portafolio](../README.es.md)
+
+[← Volver al portafolio](../README.es.md)
 
 <img src="assets/portada.png" width="100%" alt="Del dato a la decisión. Tesis de Angie Flores." />
 

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="440" viewBox="0 0 1600 440" role="img">
+<rect width="1600" height="440" fill="#F5F5F5"/>
+<text x="52" y="34" font-family="Montserrat, Arial, sans-serif" font-size="22" font-weight="600" fill="#101010" dominant-baseline="text-before-edge">THE RESULTS, IN FOUR NUMBERS</text>
+<text x="52" y="80" font-family="Montserrat, Arial, sans-serif" font-size="24" font-weight="400" fill="#666666" dominant-baseline="text-before-edge">Aggregate historical findings from the thesis</text>
+<text x="52" y="151" font-family="Montserrat, Arial, sans-serif" font-size="77" font-weight="600" fill="#101010" dominant-baseline="text-before-edge">5%</text>
+<text x="52" y="249" font-family="Montserrat, Arial, sans-serif" font-size="21" font-weight="600" fill="#101010" dominant-baseline="text-before-edge">of the portfolio prioritized</text>
+<text x="52" y="289" font-family="Montserrat, Arial, sans-serif" font-size="21" font-weight="400" fill="#666666" dominant-baseline="text-before-edge">captures 223 of 739</text>
+<text x="52" y="321" font-family="Montserrat, Arial, sans-serif" font-size="21" font-weight="400" fill="#666666" dominant-baseline="text-before-edge">historical conversions.</text>
+<polyline points="416,146 416,363" fill="none" stroke="#D5D5D5" stroke-width="1"/>
+<text x="438" y="151" font-family="Montserrat, Arial, sans-serif" font-size="77" font-weight="600" fill="#101010" dominant-baseline="text-before-edge">31 → 5</text>
+<text x="438" y="249" font-family="Montserrat, Arial, sans-serif" font-size="21" font-weight="600" fill="#101010" dominant-baseline="text-before-edge">contacts per conversion</text>
+<text x="438" y="289" font-family="Montserrat, Arial, sans-serif" font-size="21" font-weight="400" fill="#666666" dominant-baseline="text-before-edge">Estimated comparison</text>
+<text x="438" y="321" font-family="Montserrat, Arial, sans-serif" font-size="21" font-weight="400" fill="#666666" dominant-baseline="text-before-edge">with random selection.</text>
+<polyline points="802,146 802,363" fill="none" stroke="#D5D5D5" stroke-width="1"/>
+<text x="824" y="151" font-family="Montserrat, Arial, sans-serif" font-size="77" font-weight="600" fill="#101010" dominant-baseline="text-before-edge">70%</text>
+<text x="824" y="249" font-family="Montserrat, Arial, sans-serif" font-size="21" font-weight="600" fill="#101010" dominant-baseline="text-before-edge">of conversions recovered</text>
+<text x="824" y="289" font-family="Montserrat, Arial, sans-serif" font-size="21" font-weight="400" fill="#666666" dominant-baseline="text-before-edge">By prioritizing less than</text>
+<text x="824" y="321" font-family="Montserrat, Arial, sans-serif" font-size="21" font-weight="400" fill="#666666" dominant-baseline="text-before-edge">one third of the portfolio.</text>
+<polyline points="1188,146 1188,363" fill="none" stroke="#D5D5D5" stroke-width="1"/>
+<text x="1210" y="151" font-family="Montserrat, Arial, sans-serif" font-size="77" font-weight="600" fill="#101010" dominant-baseline="text-before-edge">6</text>
+<text x="1210" y="249" font-family="Montserrat, Arial, sans-serif" font-size="21" font-weight="600" fill="#101010" dominant-baseline="text-before-edge">customer profiles</text>
+<text x="1210" y="289" font-family="Montserrat, Arial, sans-serif" font-size="21" font-weight="400" fill="#666666" dominant-baseline="text-before-edge">Segmentation using</text>
+<text x="1210" y="321" font-family="Montserrat, Arial, sans-serif" font-size="21" font-weight="400" fill="#666666" dominant-baseline="text-before-edge">K-Means.</text>
+<polyline points="52,377 1548,377" fill="none" stroke="#D5D5D5" stroke-width="1"/>
+<text x="52" y="398" font-family="Montserrat, Arial, sans-serif" font-size="20" font-weight="400" fill="#666666" dominant-baseline="text-before-edge">Historical results · These figures do not measure a sales increase after deployment.</text>
+</svg>
