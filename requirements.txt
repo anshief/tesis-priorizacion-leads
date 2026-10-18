@@ -1,5 +1,5 @@
 # Public demonstration and notebooks. Python 3.11 recommended.
--r "05 Power BI/requirements.txt"
+-r "research/05 Power BI/requirements.txt"
 openpyxl>=3.1
 jupyterlab>=4
 nbformat>=5.9

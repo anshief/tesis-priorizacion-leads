@@ -12,7 +12,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 ROOT=Path(__file__).resolve().parents[1]
-sys.path.insert(0,str(ROOT / "05 Power BI"))
+sys.path.insert(0,str(ROOT / "research/05 Power BI"))
 from scoring_leads.preparacion import preparar
 
 def main():
@@ -34,7 +34,7 @@ def main():
       "campania":rng.choice(["proyecto01 LEADS","proyecto02 PRINCIPAL","proyecto03 WHATSAPP"],n),
     })
     df=preparar(raw)
-    folder=ROOT / "05 Power BI/scoring_leads/modelos"
+    folder=ROOT / "research/05 Power BI/scoring_leads/modelos"
     folder.mkdir(parents=True,exist_ok=True)
     cats={c:sorted(df[c].dropna().unique().tolist()) for c in ["sexo","estado_civil","razon_de_compra","tipo_unidad"]}
     prep={"descripcion":"DEMO SINTETICA: no corresponde al entrenamiento histórico", "origen_datos":"generador independiente con semilla 2026", "random_state":2026,"k":6,

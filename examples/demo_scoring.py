@@ -4,7 +4,7 @@ import sys
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "05 Power BI"))
+sys.path.insert(0, str(ROOT / "research/05 Power BI"))
 from scoring_leads import agregar_cluster_y_percentil
 
 def main():
